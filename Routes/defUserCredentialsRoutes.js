@@ -8,13 +8,13 @@ router.get(
   "/:user_id",
   defUserCredentialsController.getUniqueDefUserCredentials
 );
-router.post("/create", defUserCredentialsController.createDefUserCredential);
+router.post("/", defUserCredentialsController.createDefUserCredential);
 router.put(
-  "/:user_id/update",
+  "/:user_id",
   defUserCredentialsController.updateDefUserCredential
 );
 router.delete(
-  "/:user_id/delete",
+  "/:user_id",
   defUserCredentialsController.deleteDefUserCredential
 );
 

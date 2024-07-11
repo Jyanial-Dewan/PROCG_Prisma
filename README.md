@@ -16,7 +16,7 @@
 
 2.  ### switch branch to Nepolion
 
-        git checkout -b Nepolion
+        git checkout Nepolion
 
 3.  ### Set up the tracking branch (optional but recommended):
 
@@ -76,7 +76,7 @@
 
 ##Git switch another branch
 
-    git checkout -
+    git checkout <branch-name>
 
 ##Git switch another master
 
