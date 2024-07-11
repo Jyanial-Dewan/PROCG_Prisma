@@ -5,7 +5,7 @@ export const defUsersController = {
   async getDefUsers(req, res) {
     try {
       const result = await prisma.def_users.findMany();
-      return res.status(200).json({ Users: result });
+      return res.status(200).json(result);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
@@ -20,12 +20,12 @@ export const defUsersController = {
         },
       });
       if (result) {
-        return res.json({ User: result });
+        return res.status(200).json({ result });
       } else {
-        return res.json({ User: "User not found." });
+        return res.status(404).json({ message: "User not found." });
       }
     } catch (error) {
-      return res.json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   },
   //Create User
@@ -38,22 +38,23 @@ export const defUsersController = {
           user_id: user_data.user_id,
         },
       });
-      if (findDefUserId) return res.json({ user: "User Id already exist." });
+      if (findDefUserId)
+        return res.status(408).json({ message: "User Id already exist." });
       const findDefUserName = await prisma.def_users.findFirst({
         where: {
           user_name: user_data.user_name,
         },
       });
       if (findDefUserName)
-        return res.json({ user: "User Name already exist." });
+        return res.status(408).json({ message: "User Name already exist." });
       if (
         !user_data.user_name ||
         !user_data.user_type
         // !user_data.email_addresses.length ||
         // !user_data.tenant_id
       ) {
-        return res.json({
-          user: "user_name, user_type is Required",
+        return res.status(422).json({
+          message: "user_name, user_type is Required",
         });
       }
       // Validation  End/---------------------------------/
@@ -71,10 +72,10 @@ export const defUsersController = {
         },
       });
       if (result) {
-        return res.json({ status: "Success", user: result });
+        return res.status(200).json({ result });
       }
     } catch (error) {
-      return res.json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   },
   //Update User
@@ -89,11 +90,12 @@ export const defUsersController = {
           user_id: user_id,
         },
       });
-      if (!findDefUserId) return res.json({ user: "User Id not found." });
+      if (!findDefUserId)
+        return res.status(404).json({ message: "User Id not found." });
 
       if (!user_data.user_name || !user_data.user_type) {
-        return res.json({
-          user: "user_name, user_type is Required",
+        return res.status(422).json({
+          message: "user_name, user_type is Required",
         });
       }
 
@@ -113,9 +115,9 @@ export const defUsersController = {
           tenant_id: user_data.tenant_id,
         },
       });
-      if (result) return res.json({ update: "Success", user: result });
+      return res.status(200).json({ result });
     } catch (error) {
-      return res.json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   },
 
@@ -136,7 +138,8 @@ export const defUsersController = {
           user_id: user_id,
         },
       });
-      if (!findDefUserId) return res.json({ user: "User not found." });
+      if (!findDefUserId)
+        return res.status(404).json({ message: "User not found." });
 
       // Validation  End/---------------------------------/
       const result = await prisma.def_users.delete({
@@ -144,9 +147,9 @@ export const defUsersController = {
           user_id: user_id,
         },
       });
-      return res.json({ delete: "success", user: result });
+      return res.status(200).json({ result });
     } catch (error) {
-      return res.json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   },
 };
