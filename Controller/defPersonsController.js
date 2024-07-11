@@ -21,7 +21,7 @@ export const defPersonsController = {
         })
 
         if(!findDefPerson) {
-           return res.status(404).json({error: "Person not found"})
+           return res.status(404).json({message: "Person not found"})
         }
         
         return res.status(200).json(findDefPerson);
