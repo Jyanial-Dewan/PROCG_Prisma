@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { defTenantsController } from "../Controller/defTenanantsController.js";
+const Router = require('express');
+const defTenantsController = require('../Controller/defTenanantsController')
 
 const router = Router();
 
@@ -9,4 +9,4 @@ router.post('/', defTenantsController.createDefTenant);
 router.delete('/:id',defTenantsController.deleteDefTenant);
 router.put('/:id', defTenantsController.updateDefTenant);
 
-export default router;
+module.exports = router;

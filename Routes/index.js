@@ -1,8 +1,13 @@
-import defPersonsRoutes from "./defPersonsRoutes.js";
-import defUsersRoutes from "./defUsersRoutes.js";
-import defTenantsRoutes from "./defTenantsRoutes.js"
-import defUserCredentialsRoutes from "./defUserCredentialsRoutes.js";
-import { Router } from "express";
+// import defPersonsRoutes from "./defPersonsRoutes";
+// import defUsersRoutes from "./defUsersRoutes";
+// import defTenantsRoutes from "./defTenantsRoutes"
+// import defUserCredentialsRoutes from "./defUserCredentialsRoutes";
+const defPersonsRoutes = require('../Routes/defPersonsRoutes');
+const defUsersRoutes = require('../Routes/defUsersRoutes');
+const defTenantsRoutes = require('../Routes/defTenantsRoutes');
+const defUserCredentialsRoutes = require('../Routes/defUserCredentialsRoutes');
+const Router = require('express');
+// import { Router } from "express";
 
 const routes = Router();
 
@@ -11,4 +16,4 @@ routes.use("/def-users", defUsersRoutes);
 routes.use("/def-tenants", defTenantsRoutes);
 routes.use("/def-user-credentials", defUserCredentialsRoutes);
 
-export default routes;
+module.exports = routes

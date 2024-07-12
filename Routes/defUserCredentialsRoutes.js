@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { defUserCredentialsController } from "../Controller/defUserCrendentials.js";
+const Router = require('express');
+const defUserCredentialsController = require('../Controller/defUserCrendentials')
 
 const router = Router();
 
@@ -18,4 +18,4 @@ router.delete(
   defUserCredentialsController.deleteDefUserCredential
 );
 
-export default router;
+module.exports = router;
