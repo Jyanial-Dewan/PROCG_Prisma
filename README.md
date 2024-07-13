@@ -99,3 +99,12 @@ To push the current branch and set the remote as upstream, use
 upstream, see 'push.autoSetupRemote' in 'git help config'.
 
     git push --set-upstream origin Nepolion
+
+## Step By Step
+
+##Main Branch
+git fetch origin
+git pull origin Nepolion
+
+##Branch
+git merge main

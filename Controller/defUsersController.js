@@ -1,4 +1,4 @@
-const prisma = require('../DB/db.config')
+const prisma = require("../DB/db.config");
 
 exports.getDefUsers = async (req, res) => {
   try {
