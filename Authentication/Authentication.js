@@ -1,6 +1,8 @@
 const prisma = require("../DB/db.config");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const dotenv = require('dotenv');
+dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
