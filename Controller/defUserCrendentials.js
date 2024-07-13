@@ -1,4 +1,20 @@
-const prisma = require('../DB/db.config')
+const prisma = require("../DB/db.config");
+const crypto = require("crypto");
+//------------Hash Password Start
+const saltLength = "16";
+const iterations = 1000;
+const keyLength = 64;
+const digest = "sha256";
+
+// Hash password
+function hashPassword(password) {
+  // const salt = crypto.randomBytes(saltLength).toString("hex");
+  const hash = crypto
+    .pbkdf2Sync(password, saltLength, iterations, keyLength, digest)
+    .toString("hex");
+  return `${hash}`;
+}
+//-------------------------Hash Password End
 
 exports.getDefUserCredentials = async (req, res) => {
   try {
@@ -44,7 +60,7 @@ exports.createDefUserCredential = async (req, res) => {
       const result = await prisma.def_user_credentials.create({
         data: {
           user_id: user_data.user_id,
-          password: user_data.password,
+          password: hashPassword(user_data.password),
         },
       });
       return res.status(200).json({ result });
@@ -71,14 +87,12 @@ exports.updateDefUserCredential = async (req, res) => {
           user_id: user_id,
         },
         data: {
-          password: user_data.password,
+          password: hashPassword(user_data.password),
         },
       });
       return res.status(200).json({ result });
     } else {
-      return res
-        .status(404)
-        .json({ message: "User Credential Id not found." });
+      return res.status(404).json({ message: "User Credential Id not found." });
     }
   } catch (error) {
     return res.status(500).json({ error: error.message });
