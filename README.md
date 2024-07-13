@@ -104,7 +104,15 @@ upstream, see 'push.autoSetupRemote' in 'git help config'.
 
 ##Main Branch
 git fetch origin
-git pull origin Nepolion
+git pull origin Nepolion or Jyanial
 
-##Branch
+##If_main_Change
 git merge main
+
+        git pull origin main
+
+#### then 4
+
+        git add .
+        git commit -m "Your commit message"
+        git push origin Nepolion or Jyanial
