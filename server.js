@@ -3,9 +3,10 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const dotenv = require('dotenv');
-dotenv.config();
-const PORT = process.env.PORT || 2333;
+const path = require("path");
+const dotenv = require("dotenv");
+dotenv.config;
+const PORT = process.env.PORT || 3000;
 const crypto = require("crypto");
 
 const saltLength = 16;
@@ -21,14 +22,34 @@ function hashPassword(password) {
   return `${salt}:${hash}`;
 }
 
+const allowedOrigins = ["http://129.146.85.244:3001", "http://localhost:3000"];
+const options = {
+  origin: allowedOrigins,
+};
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(options));
 
 app.use(require("./Routes/index"));
 
-app.get("/", (req, res) => {
-  res.send("Welcom to PROCG Testing server.");
+// app.get("/", (req, res) => {
+//   res.send("Welcom to PROCG Testing server.");
+// });
+/***
+ *
+ * frontend starts
+ *
+ */
+
+app.use(express.static(path.join(__dirname, "./dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "./dist/index.html"));
 });
+// app.use(express.static("dist"));
+/***
+ *
+ * frontend ends
+ */
 
 //---------------------------------
 app.post("/encrypt", (req, res) => {
