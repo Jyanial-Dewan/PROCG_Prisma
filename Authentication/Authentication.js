@@ -1,7 +1,7 @@
 const prisma = require("../DB/db.config");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -59,5 +59,7 @@ exports.login = async (req, res) => {
         return res.status(408).json({ error: "Invalid credential" });
       }
     }
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };

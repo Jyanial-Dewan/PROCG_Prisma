@@ -102,13 +102,14 @@ upstream, see 'push.autoSetupRemote' in 'git help config'.
 
 ## Step By Step
 
-##Main Branch
-git fetch origin
-git pull origin Nepolion or Jyanial
+## Main Branch
 
-##If_main_Change
-git merge main
+        git fetch origin
+        git pull origin Nepolion or Jyanial
 
+## If_main_Change
+
+        git merge main
         git pull origin main
 
 #### then 4
