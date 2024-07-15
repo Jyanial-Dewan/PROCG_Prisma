@@ -6,7 +6,7 @@ const app = express();
 const path = require("path");
 const dotenv = require("dotenv");
 dotenv.config;
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const crypto = require("crypto");
 
 const saltLength = 16;
@@ -22,7 +22,7 @@ function hashPassword(password) {
   return `${salt}:${hash}`;
 }
 
-const allowedOrigins = ["http://129.146.85.244:3001", "http://localhost:3000"];
+const allowedOrigins = ["http://129.146.85.244:3001", "http://localhost:3001"];
 const options = {
   origin: allowedOrigins,
 };
