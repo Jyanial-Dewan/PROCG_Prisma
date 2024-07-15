@@ -6,7 +6,7 @@ const app = express();
 const path = require("path");
 const dotenv = require("dotenv");
 dotenv.config;
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 const crypto = require("crypto");
 
 const saltLength = 16;
