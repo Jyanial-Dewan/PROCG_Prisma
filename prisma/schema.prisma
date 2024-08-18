@@ -108,3 +108,13 @@ model def_users {
   def_user_granted_roles      def_user_granted_roles[]
   def_tenants                 def_tenants?                  @relation(fields: [tenant_id], references: [tenant_id], onDelete: NoAction, onUpdate: NoAction)
 }
+
+model messages {
+  id       Int     @id @default(autoincrement())
+  sender   String?
+  recivers Json?
+  subject  String?
+  body     String?
+  date     String?
+  status   String?
+}

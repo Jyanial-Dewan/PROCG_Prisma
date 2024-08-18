@@ -1,76 +1,81 @@
-// import express from "express";
-// const routes = require('./Routes/index')
 const express = require("express");
+const http = require('http');
+const socketIo = require('socket.io');
 const cors = require("cors");
 const app = express();
-const path = require("path");
-const dotenv = require("dotenv");
-dotenv.config;
+
 const PORT = process.env.PORT || 3000;
-const crypto = require("crypto");
+const server = http.createServer(app);
 
-const saltLength = 16;
-const iterations = 1000;
-const keyLength = 64;
-const digest = "sha256";
-// Hash password
-function hashPassword(password) {
-  const salt = crypto.randomBytes(saltLength).toString("hex");
-  const hash = crypto
-    .pbkdf2Sync(password, salt, iterations, keyLength, digest)
-    .toString("hex");
-  return `${salt}:${hash}`;
-}
-
+const io = socketIo(server, {
+  cors: {
+      origin:"http://localhost:5173",
+      methods: ["GET", "POST"]
+  }
+})
 const allowedOrigins = [
-  "http://129.146.85.244:3001",
-  "http://localhost:3001",
-  "http://129.146.85.244:3000",
-];
-const options = {
-  origin: allowedOrigins,
-};
-
+    "http://129.146.85.244:3001",
+    "http://localhost:3000",
+    "http://129.146.85.244:3000",
+    "http://localhost:5173",
+    "http://192.168.0.104:3000"
+  ];
+  const options = {
+    origin: allowedOrigins,
+  };
 app.use(express.json());
 app.use(cors(options));
-
 app.use(require("./Routes/index"));
 
-// app.get("/", (req, res) => {
-//   res.send("Welcom to PROCG Testing server.");
-// });
-/***
- *
- * frontend starts
- *
- */
 
-app.use(express.static(path.join(__dirname, "./dist")));
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "./dist/index.html"));
+// Store online users in an object
+const onlineUsers = {};
+
+// Store offline users in an object
+const offlineUsers = {};
+
+io.on("connection", (socket) => {
+  console.log("connected", socket.id);
+
+  socket.on("register", (username) => {
+    onlineUsers[username] = socket.id;
+    console.log('user registered', username);
+
+    if (offlineUsers[username]) {
+      offlineUsers[username].forEach(msg => {
+          socket.emit('message', msg);
+      });
+      delete offlineUsers[username];
+  }
+  });
+
+  socket.on('sendMessage', ({id, sender, recivers, subject, body, date, status}) => {
+    recivers.forEach((reciver) => {
+      const recipientSocketId = onlineUsers[reciver];
+      if(recipientSocketId){
+          io.to(recipientSocketId).emit('message', {
+              id, sender, recivers, subject, body, date, status
+          })
+      }
+      else {
+        if(!offlineUsers[reciver]) {
+          offlineUsers[reciver] = [];
+        }
+
+        offlineUsers[reciver].push({id, sender, recivers, subject, body, date, status})
+      }
+    })
+    
+    console.log(id, sender, recivers, subject, body, date, status)
+  });
+
+  socket.on("disconnect", () => {
+    console.log('disconncted', socket.id)
+  })
+
 });
-// app.use(express.static("dist"));
-/***
- *
- * frontend ends
- */
 
-//---------------------------------
-app.post("/encrypt", (req, res) => {
-  const { data } = req.body;
-  const encryptedData = hashPassword(data);
 
-  res.json({ encryptedData });
-});
 
-// Example route for decryption
-app.post("/decrypt", (req, res) => {
-  const { data } = req.body;
 
-  const decryptedData = verifyPassword(data);
-  res.json({ decryptedData });
-});
-//
-//------------------------------
-
-app.listen(PORT, () => console.log(`Server is running ${PORT}.`));
+server.listen(PORT, () => console.log(`Server is running ${PORT}.`));
