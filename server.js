@@ -9,16 +9,14 @@ const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-      origin:"http://localhost:5173",
+      origin:"http://192.168.0.106:8000",
       methods: ["GET", "POST"]
   }
 })
 const allowedOrigins = [
-    "http://129.146.85.244:3001",
-    "http://localhost:3000",
-    "http://129.146.85.244:3000",
     "http://localhost:5173",
-    "http://192.168.0.104:3000"
+    "http://192.168.0.106:3000",
+    "http://192.168.0.106:8000"
   ];
   const options = {
     origin: allowedOrigins,
