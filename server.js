@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-      origin:"http://192.168.0.106:8000",
+      origin: "http://localhost:5173",
       methods: ["GET", "POST"]
   }
 })
@@ -26,54 +26,54 @@ app.use(cors(options));
 app.use(require("./Routes/index"));
 
 
-// Store online users in an object
-const onlineUsers = {};
+//Socket
+let users = {};
 
-// Store offline users in an object
-const offlineUsers = {};
+// Temporary store for offline messages
+let offlineMessages = {};
 
 io.on("connection", (socket) => {
   console.log("connected", socket.id);
 
   socket.on("register", (username) => {
-    onlineUsers[username] = socket.id;
+    users[username] = socket.id;
     console.log('user registered', username);
 
-    if (offlineUsers[username]) {
-      offlineUsers[username].forEach(msg => {
-          socket.emit('message', msg);
-      });
-      delete offlineUsers[username];
-  }
-  });
+    if (offlineMessages[username]) {
+      console.log(offlineMessages[username]);
+      socket.emit("offlineMessage", offlineMessages[username])
+      delete offlineMessages[username];
+    }
+  });  
 
   socket.on('sendMessage', ({id, sender, recivers, subject, body, date, status}) => {
     recivers.forEach((reciver) => {
-      const recipientSocketId = onlineUsers[reciver];
+      const recipientSocketId = users[reciver];
       if(recipientSocketId){
           io.to(recipientSocketId).emit('message', {
               id, sender, recivers, subject, body, date, status
           })
       }
-      else {
-        if(!offlineUsers[reciver]) {
-          offlineUsers[reciver] = [];
-        }
 
-        offlineUsers[reciver].push({id, sender, recivers, subject, body, date, status})
+      if(!offlineMessages[reciver]) {
+        offlineMessages[reciver] = [];
       }
-    })
-    
+
+      offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status})
+      });
+
     console.log(id, sender, recivers, subject, body, date, status)
   });
 
-  socket.on("disconnect", () => {
-    console.log('disconncted', socket.id)
-  })
-
+  socket.on('disconnect', () => {
+    console.log('User disconnected', socket.id);
+    delete users[socket.id];
+  });
 });
 
 
+console.log(users);
+console.log(offlineMessages);
 
 
 server.listen(PORT, () => console.log(`Server is running ${PORT}.`));
