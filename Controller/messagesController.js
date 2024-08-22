@@ -4,7 +4,7 @@ exports.message = async (req, res) => {
     try {
         const message = await prisma.messages.findMany({
           orderBy: {
-            id: "desc"
+            date: "desc"
           }
         });
 
@@ -19,7 +19,7 @@ exports.getUniqueMessage = async (req, res) => {
       const id = req.params.id;
       const result = await prisma.messages.findUnique({
         where: {
-          id: Number(id),
+          id: id,
         },
       });
       if (result) {
@@ -38,6 +38,7 @@ exports.getUniqueMessage = async (req, res) => {
       
       const result = await prisma.messages.create({
         data: {
+          id: message_data.id,
           sender: message_data.sender,
           recivers: message_data.recivers,
           subject: message_data.subject,
@@ -57,7 +58,7 @@ exports.getUniqueMessage = async (req, res) => {
   exports.updateMessage = async (req, res) => {
     try {
       const message_data = req.body;
-      const id = Number(req.params.id);
+      const id = req.params.id;
       
       const result = await prisma.messages.update({
         where: {
@@ -83,7 +84,7 @@ exports.getUniqueMessage = async (req, res) => {
 
   exports.deleteMessage = async (req, res) => {
     try {
-      const id = Number(req.params.id);
+      const id = req.params.id;
   
       const result = await prisma.messages.delete({
         where: {

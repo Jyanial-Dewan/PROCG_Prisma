@@ -110,8 +110,21 @@ model def_users {
   def_tenants                 def_tenants?                  @relation(fields: [tenant_id], references: [tenant_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model data_sources {
+  data_source_id                          Int     @id
+  datasource_name                         String?
+  description                             String?
+  application_type                        String?
+  application_type_version                String?
+  last_access_synchronization_date        String?
+  last_access_synchronization_status      String?
+  last_transaction_synchronization_date   String?
+  last_transaction_synchronization_status String?
+  default_datasource                      String?
+}
+
 model messages {
-  id       Int     @id @default(autoincrement())
+  id       String  @id
   sender   String?
   recivers Json?
   subject  String?

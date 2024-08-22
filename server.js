@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require("cors");
 const app = express();
+const prisma = require('./DB/db.config');
 
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
@@ -46,13 +47,23 @@ io.on("connection", (socket) => {
     }
   });  
 
-  socket.on('sendMessage', ({id, sender, recivers, subject, body, date, status}) => {
+  socket.on('sendMessage', async ({id, sender, recivers, subject, body, date, status}) => {
+    await prisma.messages.create({
+      data: {
+        id: id,
+        sender: sender,
+        recivers: recivers,
+        subject: subject,
+        body: body,
+        date: date,
+        status: status
+      },
+    });  
+
     recivers.forEach((reciver) => {
       const recipientSocketId = users[reciver];
       if(recipientSocketId){
-          io.to(recipientSocketId).emit('message', {
-              id, sender, recivers, subject, body, date, status
-          })
+          io.to(recipientSocketId).emit('message', { id, sender, recivers, subject, body, date, status})
       }
 
       if(!offlineMessages[reciver]) {
@@ -70,10 +81,6 @@ io.on("connection", (socket) => {
     delete users[socket.id];
   });
 });
-
-
-console.log(users);
-console.log(offlineMessages);
 
 
 server.listen(PORT, () => console.log(`Server is running ${PORT}.`));
