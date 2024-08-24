@@ -76,7 +76,7 @@ exports.createDataSource = async (req, res) => {
       },
     });
     if (result) {
-      return res.status(200).json({ result });
+      return res.status(200).json(result);
     }
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -124,7 +124,7 @@ exports.updateDataSource = async (req, res) => {
         default_datasource: data.default_datasource,
       },
     });
-    return res.status(200).json({ result });
+    return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -149,7 +149,7 @@ exports.deleteDataSource = async (req, res) => {
         data_source_id: id,
       },
     });
-    return res.status(200).json({ result });
+    return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
