@@ -132,16 +132,3 @@ model messages {
   date     String?
   status   String?
 }
-
-model data_sources {
-  data_source_id                          Int     @id
-  datasource_name                         String?
-  description                             String?
-  application_type                        String?
-  application_type_version                String?
-  last_access_synchronization_date        String?
-  last_access_synchronization_status      String?
-  last_transaction_synchronization_date   String?
-  last_transaction_synchronization_status String?
-  default_datasource                      String?
-}
