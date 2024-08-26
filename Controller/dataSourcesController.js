@@ -94,15 +94,20 @@ exports.updateDataSource = async (req, res) => {
         data_source_id: id,
       },
     });
-    if (!findDataSource)
+    const findExistName = await prisma.data_sources.findFirst({
+      where: { datasource_name: data.datasource_name },
+    });
+    if (!findDataSource) {
       return res.status(404).json({ message: "Data Source Id not found." });
-
-    if (!data.datasource_name || !data.description) {
+    } else if (!data.datasource_name || !data.description) {
       return res.status(422).json({
         message: "data source name and description is Required",
       });
+    } else if (findExistName) {
+      return res
+        .status(408)
+        .json({ message: "Data Source name already exist." });
     }
-
     // Validation  End/---------------------------------/
     const result = await prisma.data_sources.update({
       where: {
