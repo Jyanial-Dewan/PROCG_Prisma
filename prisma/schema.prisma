@@ -124,11 +124,11 @@ model data_sources {
 }
 
 model messages {
-  id       String  @id
+  id       String    @id
   sender   String?
   recivers Json?
   subject  String?
   body     String?
-  date     String?
+  date     DateTime? @db.Timestamptz(6)
   status   String?
 }
