@@ -1,19 +1,31 @@
 const prisma = require("../DB/db.config");
 const crypto = require("crypto");
 //------------Hash Password Start
-const saltLength = "16";
-const iterations = 1000;
-const keyLength = 64;
-const digest = "sha256";
 
-// Hash password
-function hashPassword(password) {
-  // const salt = crypto.randomBytes(saltLength).toString("hex");
-  const hash = crypto
-    .pbkdf2Sync(password, saltLength, iterations, keyLength, digest)
-    .toString("hex");
-  return `${hash}`;
-}
+const hashPassword = (password) => {
+  return new Promise((resolve, reject) => {
+    const salt = crypto.randomBytes(8).toString("hex");
+    const iterations = 600000;
+    const keyLength = 32;
+    const digest = "sha256";
+
+    crypto.pbkdf2(
+      password,
+      salt,
+      iterations,
+      keyLength,
+      digest,
+      (err, derivedKey) => {
+        if (err) return reject(err);
+
+        const formattedHash = `pbkdf2:${digest}:${iterations}$${salt}$${derivedKey.toString(
+          "hex"
+        )}`;
+        resolve(formattedHash);
+      }
+    );
+  });
+};
 //-------------------------Hash Password End
 
 exports.getDefUserCredentials = async (req, res) => {
@@ -60,7 +72,7 @@ exports.createDefUserCredential = async (req, res) => {
       const result = await prisma.def_user_credentials.create({
         data: {
           user_id: user_data.user_id,
-          password: hashPassword(user_data.password),
+          password: await hashPassword(user_data.password),
         },
       });
       return res.status(200).json({ result });
