@@ -1,27 +1,36 @@
 const prisma = require("../DB/db.config");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  //-----------------
-  const saltLength = "16";
-  const iterations = 1000;
-  const keyLength = 64;
-  const digest = "sha256";
 
-  // Hash password
-  function hashPassword(password) {
-    // const salt = crypto.randomBytes(saltLength).toString("hex");
-    const hash = crypto
-      .pbkdf2Sync(password, saltLength, iterations, keyLength, digest)
-      .toString("hex");
-    return `${hash}`;
-  }
+  //------------------ Verify password
+  const verifyPassword = (storedData, password) => {
+    return new Promise((resolve, reject) => {
+      const [, digest, iterations, salt, storedHash] = storedData.split(/[:$]/);
+
+      const iterationsNumber = parseInt(iterations, 10);
+
+      crypto.pbkdf2(
+        password,
+        salt,
+        iterationsNumber,
+        32,
+        digest,
+        (err, derivedKey) => {
+          if (err) return reject(err);
+
+          const isMatch = storedHash === derivedKey.toString("hex");
+          resolve(isMatch);
+        }
+      );
+    });
+  };
   //-------------------------
   try {
     const user = await prisma.def_users.findFirst({
@@ -39,8 +48,14 @@ exports.login = async (req, res) => {
           user_id: user.user_id,
         },
       });
-      const encryptedPassword = hashPassword(password);
-      if (userCredential && userCredential.password === encryptedPassword) {
+      const passwordResult = await verifyPassword(
+        userCredential.password,
+        password
+      );
+      console.log({ passwordResult });
+      // const encryptedPassword = hashPassword(password);
+      if (userCredential && passwordResult) {
+        // if (userCredential && userCredential.password === encryptedPassword) {
         const token = jwt.sign(
           {
             user_id: user.user_id,
