@@ -132,3 +132,31 @@ model messages {
   date     DateTime? @db.Timestamptz(6)
   status   String?
 }
+
+model manage_access_entitlements {
+  entitlement_id   Int     @id
+  entitlement_name String
+  description      String?
+  comments         String?
+  status           String
+  effective_date   String
+  revison          Int?
+  revision_date    String?
+  created_on       String?
+  last_updated_on  String?
+  last_updated_by  String?
+  created_by       String?
+}
+
+model access_points_entitlement {
+  id               Int     @id
+  entitlement_id   Int
+  entitlement_name String?
+  description      String?
+  datasource       String?
+  platform         String?
+  element_type     String?
+  access_control   String?
+  change_control   String?
+  audit            String?
+}

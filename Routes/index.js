@@ -9,6 +9,8 @@ const defUserCredentialsRoutes = require("../Routes/defUserCredentialsRoutes");
 const authentication = require("../Routes/authenticationRoutes");
 const messagesRoutes = require("../Routes/messagesRoutes");
 const dataSourcesRoutes = require("../Routes/dataSourcesRoutes");
+const manageAccessEntitlementsRoutes = require("../Routes/manageAccessEntitlementsRoutes");
+const accessPointsEntitlementRoutes = require("../Routes/accessPointsEntitlementRoutes");
 const combinedUserRoutes = require("../Routes/combinedUserRoutes");
 const Router = require("express");
 // import { Router } from "express";
@@ -22,6 +24,8 @@ routes.use("/user-credentials", defUserCredentialsRoutes);
 routes.use("/login", authentication);
 routes.use("/messages", messagesRoutes);
 routes.use("/data-sources", dataSourcesRoutes);
+routes.use("/manage-access-entitlements", manageAccessEntitlementsRoutes);
+routes.use("/access-points-entitlement", accessPointsEntitlementRoutes);
 routes.use("/combined-user", combinedUserRoutes);
 
 module.exports = routes;
