@@ -78,21 +78,11 @@ exports.createCombinedUser = async (req, res) => {
           user_name: combinedUserData.user_name,
           user_type: combinedUserData.user_type,
           email_addresses: combinedUserData.email_addresses,
-          created_by: "system",
-          created_on: currentTime,
-          last_updated_by: "system",
-          last_updated_on: currentTime,
+          created_by: combinedUserData.created_by,
+          created_on: currentTime.toLocaleString(),
+          last_updated_by: combinedUserData.last_updated_by,
+          last_updated_on: currentTime.toLocaleString(),
           tenant_id: combinedUserData.tenant_id,
-        },
-      });
-
-      await prisma.def_persons.create({
-        data: {
-          user_id: maxID,
-          first_name: combinedUserData.first_name,
-          middle_name: combinedUserData.middle_name,
-          last_name: combinedUserData.last_name,
-          job_title: combinedUserData.job_title,
         },
       });
 
