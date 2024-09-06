@@ -28,6 +28,7 @@ exports.getUniqueAccessPointsEntitlement = async (req, res) => {
 //Create User
 exports.createAccessPointsEntitlement = async (req, res) => {
   const response = await prisma.access_points_entitlement.findMany();
+  const id = Math.max(response.map((item) => item.id));
   try {
     // Validation  START/---------------------------------/
     const data = req.body;
@@ -41,7 +42,7 @@ exports.createAccessPointsEntitlement = async (req, res) => {
     if (findAccessPointsEntitlementName)
       return res
         .status(408)
-        .json({ message: "Data Source Name already exist." });
+        .json({ message: "Entitlement Name already exist." });
     if (
       !data.entitlement_name ||
       !data.description
@@ -55,7 +56,7 @@ exports.createAccessPointsEntitlement = async (req, res) => {
     // Validation  End/---------------------------------/
     const result = await prisma.access_points_entitlement.create({
       data: {
-        id: response.id ? response.id + 1 : 0 + 1,
+        id: (id ? id : 0) + 1,
         entitlement_id: data.entitlement_id,
         entitlement_name: data.entitlement_name,
         description: data.description,
