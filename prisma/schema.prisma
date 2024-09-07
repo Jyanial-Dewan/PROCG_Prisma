@@ -148,15 +148,15 @@ model manage_access_entitlements {
   created_by       String?
 }
 
-model access_points_entitlement {
-  id               Int     @id
-  entitlement_id   Int
-  entitlement_name String?
-  description      String?
-  datasource       String?
-  platform         String?
-  element_type     String?
-  access_control   String?
-  change_control   String?
-  audit            String?
+model access_points_element {
+  id             Int     @id(map: "access_points_entitlement_pkey")
+  entitlement_id Int
+  element_name   String?
+  description    String?
+  datasource     String?
+  platform       String?
+  element_type   String?
+  access_control String?
+  change_control String?
+  audit          String?
 }
