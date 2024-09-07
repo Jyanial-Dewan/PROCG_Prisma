@@ -25,7 +25,7 @@ routes.use("/login", authentication);
 routes.use("/messages", messagesRoutes);
 routes.use("/data-sources", dataSourcesRoutes);
 routes.use("/manage-access-entitlements", manageAccessEntitlementsRoutes);
-routes.use("/access-points-entitlement", accessPointsEntitlementRoutes);
+routes.use("/access-points-element", accessPointsEntitlementRoutes);
 routes.use("/combined-user", combinedUserRoutes);
 
 module.exports = routes;

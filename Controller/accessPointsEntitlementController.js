@@ -1,7 +1,7 @@
 const prisma = require("../DB/db.config");
 exports.getAccessPointsEntitlement = async (req, res) => {
   try {
-    const result = await prisma.access_points_entitlement.findMany();
+    const result = await prisma.access_points_element.findMany();
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -11,7 +11,7 @@ exports.getAccessPointsEntitlement = async (req, res) => {
 exports.getUniqueAccessPointsEntitlement = async (req, res) => {
   try {
     const id = req.params.id;
-    const result = await prisma.access_points_entitlement.findUnique({
+    const result = await prisma.access_points_element.findUnique({
       where: {
         id: Number(id),
       },
@@ -27,14 +27,14 @@ exports.getUniqueAccessPointsEntitlement = async (req, res) => {
 };
 //Create User
 exports.createAccessPointsEntitlement = async (req, res) => {
-  const response = await prisma.access_points_entitlement.findMany();
+  const response = await prisma.access_points_element.findMany();
   const id = Math.max(response.map((item) => item.id));
   try {
     // Validation  START/---------------------------------/
     const data = req.body;
 
     const findAccessPointsEntitlementName =
-      await prisma.access_points_entitlement.findFirst({
+      await prisma.access_points_element.findFirst({
         where: {
           entitlement_name: data.entitlement_name,
         },
@@ -54,7 +54,7 @@ exports.createAccessPointsEntitlement = async (req, res) => {
       });
     }
     // Validation  End/---------------------------------/
-    const result = await prisma.access_points_entitlement.create({
+    const result = await prisma.access_points_element.create({
       data: {
         id: (id ? id : 0) + 1,
         entitlement_id: data.entitlement_id,
@@ -82,7 +82,7 @@ exports.updateAccessPointsEntitlement = async (req, res) => {
     const id = Number(req.params.id);
 
     // Validation  START/---------------------------------/
-    const findExistName = await prisma.access_points_entitlement.findFirst({
+    const findExistName = await prisma.access_points_element.findFirst({
       where: {
         entitlement_name: data.entitlement_name,
       },
@@ -97,7 +97,7 @@ exports.updateAccessPointsEntitlement = async (req, res) => {
         .json({ message: "Data Source name already exist." });
     }
     // Validation  End/---------------------------------/
-    const result = await prisma.access_points_entitlement.update({
+    const result = await prisma.access_points_element.update({
       where: {
         id: id,
       },
@@ -126,7 +126,7 @@ exports.deleteAccessPointsEntitlement = async (req, res) => {
 
     // Validation  START/---------------------------------/
     const findAccessPointsEntitlementId =
-      await prisma.access_points_entitlement.findUnique({
+      await prisma.access_points_element.findUnique({
         where: {
           id: id,
         },
@@ -135,7 +135,7 @@ exports.deleteAccessPointsEntitlement = async (req, res) => {
       return res.status(404).json({ message: "Data Source not found." });
 
     // Validation  End/---------------------------------/
-    const result = await prisma.access_points_entitlement.delete({
+    const result = await prisma.access_points_element.delete({
       where: {
         id: id,
       },
