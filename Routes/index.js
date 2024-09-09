@@ -1,7 +1,3 @@
-// import defPersonsRoutes from "./defPersonsRoutes";
-// import defUsersRoutes from "./defUsersRoutes";
-// import defTenantsRoutes from "./defTenantsRoutes"
-// import defUserCredentialsRoutes from "./defUserCredentialsRoutes";
 const defPersonsRoutes = require("../Routes/defPersonsRoutes");
 const defUsersRoutes = require("../Routes/defUsersRoutes");
 const defTenantsRoutes = require("../Routes/defTenantsRoutes");
@@ -13,7 +9,6 @@ const manageAccessEntitlementsRoutes = require("../Routes/manageAccessEntitlemen
 const accessPointsEntitlementRoutes = require("../Routes/accessPointsEntitlementRoutes");
 const combinedUserRoutes = require("../Routes/combinedUserRoutes");
 const Router = require("express");
-// import { Router } from "express";
 
 const routes = Router();
 
