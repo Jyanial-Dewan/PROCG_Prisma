@@ -148,8 +148,8 @@ model manage_access_entitlements {
   created_by       String?
 }
 
-model access_points_element {
-  id             Int     @id(map: "access_points_entitlement_pkey")
+model access_points_elements {
+  id             Int     @id
   entitlement_id Int
   element_name   String?
   description    String?
@@ -159,4 +159,28 @@ model access_points_element {
   access_control String?
   change_control String?
   audit          String?
+}
+
+model manage_global_condition_logic_attributes {
+  id                               Int  @id
+  manage_global_condition_logic_id Int
+  widget_position                  Int?
+  widget_state                     Int?
+}
+
+model manage_global_condition_logics {
+  manage_global_condition_logic_id Int     @id
+  manage_global_condition_id       Int
+  object                           String?
+  attribute                        String?
+  condition                        String?
+  value                            String?
+}
+
+model manage_global_conditions {
+  manage_global_condition_id Int     @id
+  name                       String?
+  datasource                 String?
+  description                String?
+  status                     String?
 }
