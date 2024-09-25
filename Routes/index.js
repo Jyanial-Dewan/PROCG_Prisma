@@ -1,7 +1,3 @@
-// import defPersonsRoutes from "./defPersonsRoutes";
-// import defUsersRoutes from "./defUsersRoutes";
-// import defTenantsRoutes from "./defTenantsRoutes"
-// import defUserCredentialsRoutes from "./defUserCredentialsRoutes";
 const defPersonsRoutes = require("../Routes/defPersonsRoutes");
 const defUsersRoutes = require("../Routes/defUsersRoutes");
 const defTenantsRoutes = require("../Routes/defTenantsRoutes");
@@ -12,8 +8,10 @@ const dataSourcesRoutes = require("../Routes/dataSourcesRoutes");
 const manageAccessEntitlementsRoutes = require("../Routes/manageAccessEntitlementsRoutes");
 const accessPointsEntitlementRoutes = require("../Routes/accessPointsEntitlementRoutes");
 const combinedUserRoutes = require("../Routes/combinedUserRoutes");
+const manageGlobalConditionsRoutes = require("../Routes/manageGlobalConditionsRoutes");
+const manageGlobalConditionsLogicsRoutes = require("../Routes/manageGlobalConditionLogicsRoutes");
+const manageGlobalConditionsLogicAttributesRoutes = require("../Routes/manageGlobalConditionLogicAttributesRoutes");
 const Router = require("express");
-// import { Router } from "express";
 
 const routes = Router();
 
@@ -25,7 +23,16 @@ routes.use("/login", authentication);
 routes.use("/messages", messagesRoutes);
 routes.use("/data-sources", dataSourcesRoutes);
 routes.use("/manage-access-entitlements", manageAccessEntitlementsRoutes);
-routes.use("/access-points-entitlement", accessPointsEntitlementRoutes);
+routes.use("/access-points-element", accessPointsEntitlementRoutes);
 routes.use("/combined-user", combinedUserRoutes);
+routes.use("/manage-global-conditions", manageGlobalConditionsRoutes);
+routes.use(
+  "/manage-global-condition-logics",
+  manageGlobalConditionsLogicsRoutes
+);
+routes.use(
+  "/manage-global-condition-logic-attributes",
+  manageGlobalConditionsLogicAttributesRoutes
+);
 
 module.exports = routes;
