@@ -148,6 +148,7 @@ model manage_access_entitlements {
   created_by       String?
 }
 
+
 model access_points_elements {
   id             Int     @id
   entitlement_id Int
@@ -159,6 +160,7 @@ model access_points_elements {
   access_control String?
   change_control String?
   audit          String?
+
 }
 
 model manage_global_condition_logic_attributes {
@@ -183,4 +185,5 @@ model manage_global_conditions {
   datasource                 String?
   description                String?
   status                     String?
+
 }
