@@ -56,7 +56,7 @@ io.use((socket, next) => {
 })
 
 io.on("connection", (socket) => {
-  socket.on('sendMessage', async ({id, sender, recivers, subject, body, date, status}) => {
+  socket.on('sendMessage', async ({id, sender, recivers, subject, body, date, status, parentid}) => {
     await prisma.messages.create({
       data: {
         id: id,
@@ -65,12 +65,13 @@ io.on("connection", (socket) => {
         subject: subject,
         body: body,
         date: date,
-        status: status
+        status: status,
+        parentid: parentid
       },
     });  
 
     recivers.forEach((reciver) => {
-      io.to(reciver).emit('message', { id, sender, recivers, subject, body, date, status})
+      io.to(reciver).emit('message', { id, sender, recivers, subject, body, date, status, parentid})
 
       if(!offlineMessages[reciver]) {
         offlineMessages[reciver] = [];
@@ -79,7 +80,7 @@ io.on("connection", (socket) => {
       const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
 
       if (users[reciver]?.length !== onlineUsers.size) {
-        offlineMessages[reciver].push({ id, sender, recivers, subject, body, date, status});
+        offlineMessages[reciver].push({ id, sender, recivers, subject, body, date, status, parentid});
       }
       });
       

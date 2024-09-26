@@ -32,6 +32,27 @@ exports.getUniqueMessage = async (req, res) => {
     }
   };
 
+  exports.getReplyMessage = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const result = await prisma.messages.findMany({
+        where: {
+          parentid: id,
+        },
+        orderBy: {
+          date: "desc"
+        }
+      });
+      if (result) {
+        return res.status(200).json(result);
+      } else {
+        return res.status(404).json({ message: "MessageID not found." });
+      }
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
   exports.createMessage = async (req, res) => {
     try {
       const message_data = req.body;
@@ -44,7 +65,8 @@ exports.getUniqueMessage = async (req, res) => {
           subject: message_data.subject,
           body: message_data.body,
           date: message_data.date,
-          status: message_data.status
+          status: message_data.status,
+          parentid: message_data.parentid
         },
       });
       if (result) {
