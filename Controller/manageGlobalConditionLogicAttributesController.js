@@ -36,7 +36,6 @@ exports.createManageGlobalConditionLogicArrtibute = async (req, res) => {
       await prisma.manage_global_condition_logic_attributes.findMany();
     const id = Math.max(...response.map((item) => item.id));
     const data = req.body;
-
     const result = await prisma.manage_global_condition_logic_attributes.create(
       {
         data: {
@@ -89,6 +88,48 @@ exports.updateManageGlobalConditionLogicArrtibute = async (req, res) => {
     );
     return res.status(200).json(result);
   } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+exports.upsertManageGlobalConditionLogicArrtibute = async (req, res) => {
+  const data = req.body.upsertAttributes || req.body;
+
+  if (!Array.isArray(data)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid input: 'Data' should be an array" });
+  }
+  const response =
+    await prisma.manage_global_condition_logic_attributes.findMany();
+  const id = Math.max(
+    ...response.map((item) => item.manage_global_condition_logic_id)
+  );
+  const upsertResults = [];
+
+  try {
+    for (const item of data) {
+      const result =
+        await prisma.manage_global_condition_logic_attributes.upsert({
+          where: { id: item.id },
+          update: {
+            manage_global_condition_logic_id:
+              item.manage_global_condition_logic_id,
+            widget_position: item.widget_position,
+            widget_state: item.widget_state,
+          },
+          create: {
+            id: response.length > 0 ? id + 1 : 1,
+            manage_global_condition_logic_id: id + 1,
+            widget_position: item.widget_position,
+            widget_state: item.widget_state,
+          },
+        });
+      upsertResults.push(result);
+    }
+
+    return res.status(200).json(upsertResults);
+  } catch (error) {
+    console.error("Error in upsert operation:", error);
     return res.status(500).json({ error: error.message });
   }
 };
