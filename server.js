@@ -10,11 +10,10 @@ const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
-
 const allowedOrigins = [
   "http://localhost:5173",
   "http://192.168.0.106:3000",
@@ -33,20 +32,29 @@ let users = {};
 // Temporary store for offline messages
 let offlineMessages = {};
 
-io.on("connection", (socket) => {
-  console.log("connected", socket.id);
+io.use((socket, next) => {
+  const key = socket.handshake.query.key;
 
-  socket.on("register", (username) => {
-    users[username] = socket.id;
-    console.log("user registered", username);
-
-    if (offlineMessages[username]) {
-      console.log(offlineMessages[username]);
-      socket.emit("offlineMessage", offlineMessages[username]);
-      delete offlineMessages[username];
+  if (key) {
+    socket.join(key);
+    console.log(`User ${socket.id} joined room ${key}`);
+    if (!users[key]) {
+      users[key] = [];
     }
-  });
+    users[key].push(socket.id);
 
+    if (offlineMessages[key]) {
+      offlineMessages[key].forEach((msg) => {
+        console.log("offline", msg);
+        socket.emit("message", msg);
+      });
+      offlineMessages[key] = [];
+    }
+    next();
+  }
+});
+
+io.on("connection", (socket) => {
   socket.on(
     "sendMessage",
     async ({ id, sender, recivers, subject, body, date, status }) => {
@@ -63,9 +71,24 @@ io.on("connection", (socket) => {
       });
 
       recivers.forEach((reciver) => {
-        const recipientSocketId = users[reciver];
-        if (recipientSocketId) {
-          io.to(recipientSocketId).emit("message", {
+        io.to(reciver).emit("message", {
+          id,
+          sender,
+          recivers,
+          subject,
+          body,
+          date,
+          status,
+        });
+
+        if (!offlineMessages[reciver]) {
+          offlineMessages[reciver] = [];
+        }
+
+        const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
+
+        if (users[reciver]?.length !== onlineUsers.size) {
+          offlineMessages[reciver].push({
             id,
             sender,
             recivers,
@@ -75,29 +98,20 @@ io.on("connection", (socket) => {
             status,
           });
         }
-
-        if (!offlineMessages[reciver]) {
-          offlineMessages[reciver] = [];
-        }
-
-        offlineMessages[reciver].push({
-          id,
-          sender,
-          recivers,
-          subject,
-          body,
-          date,
-          status,
-        });
       });
-
-      console.log(id, sender, recivers, subject, body, date, status);
     }
   );
 
+  socket.on("read", ({ id, user }) => {
+    io.to(user).emit("sync", id);
+  });
+
   socket.on("disconnect", () => {
-    console.log("User disconnected", socket.id);
-    delete users[socket.id];
+    console.log("User disconnected:", socket.id);
+    // Remove user from the room tracking (optional for simplicity)
+    for (const room in users) {
+      users[room] = users[room].filter((id) => id !== socket.id);
+    }
   });
 });
 
