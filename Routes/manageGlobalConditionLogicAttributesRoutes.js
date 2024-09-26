@@ -15,6 +15,10 @@ router.post(
   "/",
   manageGlobalConditionLogicAttributesController.createManageGlobalConditionLogicArrtibute
 );
+router.post(
+  "/upsert",
+  manageGlobalConditionLogicAttributesController.upsertManageGlobalConditionLogicArrtibute
+);
 router.delete(
   "/:id",
   manageGlobalConditionLogicAttributesController.deleteManageGlobalConditionLogicArrtibute
