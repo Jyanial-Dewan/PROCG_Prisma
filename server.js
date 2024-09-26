@@ -14,6 +14,7 @@ const io = socketIo(server, {
     methods: ["GET", "POST"],
   },
 });
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://192.168.0.106:3000",
