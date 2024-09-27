@@ -97,11 +97,12 @@ exports.updateManageGlobalCondition = async (req, res) => {
       return res.status(422).json({
         message: "ManageGlobalCondition name and description is Required",
       });
-    } else if (findExistName) {
-      return res
-        .status(408)
-        .json({ message: "ManageGlobalCondition name already exist." });
     }
+    // else if (findExistName) {
+    //   return res
+    //     .status(408)
+    //     .json({ message: "ManageGlobalCondition name already exist." });
+    // }
     // Validation  End/---------------------------------/
     const result = await prisma.manage_global_conditions.update({
       where: {

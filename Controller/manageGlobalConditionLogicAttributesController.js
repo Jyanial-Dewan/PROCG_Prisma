@@ -118,8 +118,9 @@ exports.upsertManageGlobalConditionLogicArrtibute = async (req, res) => {
             widget_state: item.widget_state,
           },
           create: {
-            id: response.length > 0 ? id + 1 : 1,
-            manage_global_condition_logic_id: id + 1,
+            id: item.id,
+            manage_global_condition_logic_id:
+              item.manage_global_condition_logic_id,
             widget_position: item.widget_position,
             widget_state: item.widget_state,
           },
