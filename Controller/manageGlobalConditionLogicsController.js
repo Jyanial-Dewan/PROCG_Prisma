@@ -145,7 +145,8 @@ exports.upsertManageGlobalConditionLogic = async (req, res) => {
           value: item.value,
         },
         create: {
-          manage_global_condition_logic_id: response.length > 0 ? id + 1 : 1,
+          manage_global_condition_logic_id:
+            item.manage_global_condition_logic_id,
           manage_global_condition_id: item.manage_global_condition_id,
           object: item.object,
           attribute: item.attribute,
