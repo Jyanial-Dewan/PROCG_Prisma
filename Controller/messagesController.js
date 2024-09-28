@@ -66,7 +66,8 @@ exports.getUniqueMessage = async (req, res) => {
           body: message_data.body,
           date: message_data.date,
           status: message_data.status,
-          parentid: message_data.parentid
+          parentid: message_data.parentid,
+          involvedusers: message_data.involvedusers
         },
       });
       if (result) {
