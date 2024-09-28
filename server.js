@@ -56,7 +56,7 @@ io.use((socket, next) => {
 })
 
 io.on("connection", (socket) => {
-  socket.on('sendMessage', async ({id, sender, recivers, subject, body, date, status, parentid}) => {
+  socket.on('sendMessage', async ({id, sender, recivers, subject, body, date, status, parentid, involvedusers}) => {
     await prisma.messages.create({
       data: {
         id: id,
@@ -66,29 +66,32 @@ io.on("connection", (socket) => {
         body: body,
         date: date,
         status: status,
-        parentid: parentid
+        parentid: parentid,
+        involvedusers: involvedusers
       },
     });  
 
     recivers.forEach((reciver) => {
-      io.to(reciver).emit('message', { id, sender, recivers, subject, body, date, status, parentid})
+      io.to(reciver).emit('message', {id, sender, recivers, subject, body, date, status, parentid, involvedusers});
 
       if(!offlineMessages[reciver]) {
         offlineMessages[reciver] = [];
       }
 
-      const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
+      offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers});
 
-      if (users[reciver]?.length !== onlineUsers.size) {
-        offlineMessages[reciver].push({ id, sender, recivers, subject, body, date, status, parentid});
-      }
+      // const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
+
+      // if (users[reciver]?.length !== onlineUsers.size) {
+      //   offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers});
+      // }
       });
       
   });
 
   socket.on("read", ({id, user}) => {
     io.to(user).emit("sync", id)
-  })
+  });
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);

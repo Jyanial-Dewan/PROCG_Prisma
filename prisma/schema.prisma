@@ -124,14 +124,15 @@ model data_sources {
 }
 
 model messages {
-  id       String    @id
-  sender   String?
-  recivers Json?
-  subject  String?
-  body     String?
-  date     DateTime? @db.Timestamptz(6)
-  status   String?
-  parentid String?
+  id            String    @id
+  sender        String?
+  recivers      Json?
+  subject       String?
+  body          String?
+  date          DateTime? @db.Timestamptz(6)
+  status        String?
+  parentid      String?
+  involvedusers Json?
 }
 
 model manage_access_entitlements {
