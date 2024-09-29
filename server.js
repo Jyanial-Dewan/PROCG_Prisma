@@ -78,13 +78,13 @@ io.on("connection", (socket) => {
         offlineMessages[reciver] = [];
       }
 
-      offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers});
+      // offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers});
 
-      // const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
+      const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
 
-      // if (users[reciver]?.length !== onlineUsers.size) {
-      //   offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers});
-      // }
+      if (users[reciver]?.length !== onlineUsers.size) {
+        offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers});
+      }
       });
       
   });
