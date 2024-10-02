@@ -8,6 +8,6 @@ router.get("/:id", manageAccessModelsControllers.getUniqueManageAccessModel);
 router.post("/", manageAccessModelsControllers.createManageAccessModel);
 router.delete("/:id", manageAccessModelsControllers.deleteManageAccessModel);
 router.put("/:id", manageAccessModelsControllers.updateManageAccessModel);
-router.post("/upsert", manageAccessModelsControllers.upsertManageAccessModel);
+// router.post("/upsert", manageAccessModelsControllers.upsertManageAccessModel);
 
 module.exports = router;
