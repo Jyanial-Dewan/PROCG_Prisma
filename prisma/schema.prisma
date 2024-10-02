@@ -186,3 +186,25 @@ model manage_global_conditions {
   description                String?
   status                     String?
 }
+
+model manage_access_model_attributes {
+  id                     Int  @id
+  manage_access_model_id Int
+  widget_position        Int?
+  widget_state           Int?
+}
+
+model manage_access_models {
+  manage_access_model_id Int     @id
+  model_name             String?
+  description            String?
+  type                   String?
+  run_status             String?
+  state                  String?
+  last_run_date          String?
+  created_by             String?
+  last_updated_by        String?
+  last_updated_date      String?
+  revision               Int?
+  revision_date          String?
+}

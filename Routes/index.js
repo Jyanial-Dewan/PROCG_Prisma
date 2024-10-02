@@ -11,6 +11,8 @@ const combinedUserRoutes = require("../Routes/combinedUserRoutes");
 const manageGlobalConditionsRoutes = require("../Routes/manageGlobalConditionsRoutes");
 const manageGlobalConditionsLogicsRoutes = require("../Routes/manageGlobalConditionLogicsRoutes");
 const manageGlobalConditionsLogicAttributesRoutes = require("../Routes/manageGlobalConditionLogicAttributesRoutes");
+const manageAccessModelsRoutes = require("../Routes/manageAccessModelsRoutes");
+const manageAccessModelsAttributesRoutes = require("../Routes/manageAccessModelsAttributesRoutes");
 const Router = require("express");
 
 const routes = Router();
@@ -33,6 +35,11 @@ routes.use(
 routes.use(
   "/manage-global-condition-logic-attributes",
   manageGlobalConditionsLogicAttributesRoutes
+);
+routes.use("/manage-access-models", manageAccessModelsRoutes);
+routes.use(
+  "/manage-access-model-attributes",
+  manageAccessModelsAttributesRoutes
 );
 
 module.exports = routes;
