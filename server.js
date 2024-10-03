@@ -4,9 +4,8 @@ const socketIo = require("socket.io");
 const cors = require("cors");
 const app = express();
 const prisma = require("./DB/db.config");
-require("dotenv").config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 
 const io = socketIo(server, {
@@ -15,7 +14,12 @@ const io = socketIo(server, {
     methods: ["GET", "POST"],
   },
 });
-const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://129.146.53.68:5000",
+  "http://129.146.53.68:3000",
+  "http://129.146.53.68:8000",
+];
 const options = {
   origin: allowedOrigins,
 };
