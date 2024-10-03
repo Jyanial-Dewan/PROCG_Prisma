@@ -186,3 +186,35 @@ model manage_global_conditions {
   description                String?
   status                     String?
 }
+
+model manage_access_models {
+  manage_access_model_id Int     @id
+  model_name             String?
+  description            String?
+  type                   String?
+  run_status             String?
+  state                  String?
+  last_run_date          String?
+  created_by             String?
+  last_updated_by        String?
+  last_updated_date      String?
+  revision               Int?
+  revision_date          String?
+}
+
+model manage_access_model_logics {
+  manage_access_model_logic_id Int     @id
+  manage_access_model_id       Int
+  filter                       String?
+  object                       String?
+  attribute                    String?
+  condition                    String?
+  value                        String?
+}
+
+model manage_access_model_logic_attributes {
+  id                           Int  @id(map: "manage_access_model_attributes_pkey")
+  manage_access_model_logic_id Int
+  widget_position              Int?
+  widget_state                 Int?
+}
