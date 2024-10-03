@@ -47,7 +47,7 @@ io.use((socket, next) => {
       if(offlineMessages[key]) {
         offlineMessages[key].forEach((msg) => {
           console.log("offline", msg)
-          socket.emit("message", msg)
+          socket.emit("offlineMessage", msg)
         });
         offlineMessages[key] = [];
       }
@@ -78,7 +78,7 @@ io.on("connection", (socket) => {
         offlineMessages[reciver] = [];
       }
 
-      // offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers});
+      // offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers}); 
 
       const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
 
