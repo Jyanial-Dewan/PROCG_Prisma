@@ -4,6 +4,7 @@ const socketIo = require("socket.io");
 const cors = require("cors");
 const app = express();
 const prisma = require("./DB/db.config");
+require("dotenv").config();
 
 const PORT = process.env.PORT;
 const server = http.createServer(app);
