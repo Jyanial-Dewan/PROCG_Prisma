@@ -36,8 +36,10 @@ let offlineMessages = {};
 io.use((socket, next) => {
   const key = socket.handshake.query.key;
 
-  if(key) {
-      socket.join(key);
+  if(!key) {
+    return
+  } else {
+    socket.join(key);
       console.log(`User ${socket.id} joined room ${key}`);
       if (!users[key]) {
         users[key] = [];
@@ -53,9 +55,28 @@ io.use((socket, next) => {
       }
       next();
   }
+
+  
 })
 
 io.on("connection", (socket) => {
+  // socket.on('register', (userName) => {
+  //   socket.join(userName);
+  //   console.log(`user ${socket.id} joined room ${userName}`);
+  //   if (!users[userName]) {
+  //     users[userName] = [];
+  //   }
+  //   users[userName].push(socket.id);
+
+  //   if(offlineMessages[userName]) {
+  //     offlineMessages[userName].forEach((msg) => {
+  //       console.log("offline", msg)
+  //       socket.emit("offlineMessage", msg)
+  //     });
+  //     offlineMessages[userName] = [];
+  //   }
+  // })
+
   socket.on('sendMessage', async ({id, sender, recivers, subject, body, date, status, parentid, involvedusers}) => {
     await prisma.messages.create({
       data: {
