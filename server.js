@@ -56,24 +56,22 @@ io.use((socket, next) => {
       next();
   }
 
-  
 })
 
+
 io.on("connection", (socket) => {
-  // socket.on('register', (userName) => {
-  //   socket.join(userName);
-  //   console.log(`user ${socket.id} joined room ${userName}`);
-  //   if (!users[userName]) {
-  //     users[userName] = [];
-  //   }
-  //   users[userName].push(socket.id);
+    // socket.on('register', (userName) => {
+    // socket.join(userName);
+    // users[userName] = socket.id;
+    // console.log(`user ${socket.id} joined room ${userName}`);
+    
 
   //   if(offlineMessages[userName]) {
   //     offlineMessages[userName].forEach((msg) => {
   //       console.log("offline", msg)
   //       socket.emit("offlineMessage", msg)
   //     });
-  //     offlineMessages[userName] = [];
+  //     delete offlineMessages[userName];
   //   }
   // })
 
