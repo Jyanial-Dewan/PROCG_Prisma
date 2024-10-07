@@ -121,7 +121,7 @@ exports.updateManageAccessModel = async (req, res) => {
         created_by: data.created_by,
         last_updated_by: data.last_updated_by,
         last_updated_date: dateToday,
-        revision: data.revison + 1,
+        revision: findExistId.revision + 1,
         revision_date: dateToday,
       },
     });
