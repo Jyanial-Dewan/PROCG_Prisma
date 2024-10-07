@@ -30,8 +30,7 @@ app.use(require("./Routes/index"));
 //Socket
 let users = {};
 
-// Temporary store for offline messages
-let offlineMessages = {};
+
 
 io.use((socket, next) => {
   const key = socket.handshake.query.key;
@@ -46,13 +45,6 @@ io.use((socket, next) => {
       }
       users[key].push(socket.id);
 
-      if(offlineMessages[key]) {
-        offlineMessages[key].forEach((msg) => {
-          console.log("offline", msg)
-          socket.emit("offlineMessage", msg)
-        });
-        offlineMessages[key] = [];
-      }
       next();
   }
 
@@ -60,22 +52,7 @@ io.use((socket, next) => {
 
 
 io.on("connection", (socket) => {
-    // socket.on('register', (userName) => {
-    // socket.join(userName);
-    // users[userName] = socket.id;
-    // console.log(`user ${socket.id} joined room ${userName}`);
-    
-
-  //   if(offlineMessages[userName]) {
-  //     offlineMessages[userName].forEach((msg) => {
-  //       console.log("offline", msg)
-  //       socket.emit("offlineMessage", msg)
-  //     });
-  //     delete offlineMessages[userName];
-  //   }
-  // })
-
-  socket.on('sendMessage', async ({id, sender, recivers, subject, body, date, status, parentid, involvedusers}) => {
+  socket.on('sendMessage', async ({id, sender, recivers, subject, body, date, status, parentid, involvedusers, readers}) => {
     await prisma.messages.create({
       data: {
         id: id,
@@ -86,30 +63,49 @@ io.on("connection", (socket) => {
         date: date,
         status: status,
         parentid: parentid,
-        involvedusers: involvedusers
+        involvedusers: involvedusers,
+        readers: readers
       },
     });  
 
     recivers.forEach((reciver) => {
-      io.to(reciver).emit('message', {id, sender, recivers, subject, body, date, status, parentid, involvedusers});
+      io.to(reciver).emit('message', {id, sender, recivers, subject, body, date, status, parentid, involvedusers, readers});
 
-      if(!offlineMessages[reciver]) {
-        offlineMessages[reciver] = [];
-      }
+      // if(!offlineMessages[reciver]) {
+      //   offlineMessages[reciver] = [];
+      // }
 
-      // offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers}); 
+      // // offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers, readers}); 
 
-      const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
+      // const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
 
-      if (users[reciver]?.length !== onlineUsers.size) {
-        offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers});
-      }
+      // if (users[reciver]?.length !== onlineUsers.size) {
+      //   offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers, readers});
+      // }
       });
       
   });
 
-  socket.on("read", ({id, user}) => {
-    io.to(user).emit("sync", id)
+  socket.on("read", async ({id, user}) => {
+    const messagesToUpdate = await prisma.messages.findMany({
+      where: {
+        parentid: id
+      }
+    });
+
+    for(const message of messagesToUpdate) {
+      const updatedReaders = message.readers.filter(reader => reader !== user);
+      await prisma.messages.update({
+        where: {
+          id: message.id
+        },
+        data: {
+          readers: updatedReaders
+        }
+      })
+    };
+
+    io.to(user).emit("sync", id);
   });
 
   socket.on("disconnect", () => {
