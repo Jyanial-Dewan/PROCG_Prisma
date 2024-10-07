@@ -67,7 +67,8 @@ exports.getUniqueMessage = async (req, res) => {
           date: message_data.date,
           status: message_data.status,
           parentid: message_data.parentid,
-          involvedusers: message_data.involvedusers
+          involvedusers: message_data.involvedusers,
+          readers: message_data.readers
         },
       });
       if (result) {
@@ -94,7 +95,10 @@ exports.getUniqueMessage = async (req, res) => {
           subject: message_data.subject,
           body: message_data.body,
           date: message_data.date,
-          status: message_data.status
+          status: message_data.status,
+          parentid: message_data.parentid,
+          involvedusers: message_data.involvedusers,
+          readers: message_data.readers
         },
       });
       if (result) {

@@ -133,6 +133,7 @@ model messages {
   status        String?
   parentid      String?
   involvedusers Json?
+  readers       Json?
 }
 
 model manage_access_entitlements {
