@@ -219,3 +219,23 @@ model manage_access_model_logic_attributes {
   widget_position              Int?
   widget_state                 Int?
 }
+
+model controls {
+  control_id            Int     @id(map: "create_controls_pkey")
+  control_name          String?
+  description           String?
+  pending_results_count Int?
+  control_type          String?
+  priority              Int?
+  datasources           String?
+  control_last_run      String?
+  control_last_updated  String?
+  status                String?
+  state                 String?
+  result_investigator   String?
+  authorized_data       String?
+  revision              Int?
+  revision_date         String?
+  created_by            String?
+  created_date          String?
+}
