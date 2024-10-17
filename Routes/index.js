@@ -14,6 +14,7 @@ const manageGlobalConditionsLogicAttributesRoutes = require("../Routes/manageGlo
 const manageAccessModelsRoutes = require("../Routes/manageAccessModelsRoutes");
 const manageAccessModelLogicsRoutes = require("../Routes/manageAccessModelLogicsRoutes");
 const manageAccessModelLogicAttributesRoutes = require("./manageAccessModelLogicAttributesRoutes");
+const controlesRoutes = require("./controlsRoutes");
 const Router = require("express");
 
 const routes = Router();
@@ -43,5 +44,6 @@ routes.use(
   "/manage-access-model-logic-attributes",
   manageAccessModelLogicAttributesRoutes
 );
+routes.use("/controls", controlesRoutes);
 
 module.exports = routes;
