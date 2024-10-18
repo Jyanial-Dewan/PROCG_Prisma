@@ -137,31 +137,32 @@ model messages {
 }
 
 model manage_access_entitlements {
-  entitlement_id   Int     @id
-  entitlement_name String
-  description      String?
-  comments         String?
-  status           String
-  effective_date   String
-  revison          Int?
-  revision_date    String?
-  created_on       String?
-  last_updated_on  String?
-  last_updated_by  String?
-  created_by       String?
+  entitlement_id              Int                           @id
+  entitlement_name            String
+  description                 String?
+  comments                    String?
+  status                      String
+  effective_date              String
+  revison                     Int?
+  revision_date               String?
+  created_on                  String?
+  last_updated_on             String?
+  last_updated_by             String?
+  created_by                  String?
+  access_entitlement_elements access_entitlement_elements[]
 }
 
 model access_points_elements {
-  id             Int     @id(map: "access_points_entitlement_pkey")
-  entitlement_id Int
-  element_name   String?
-  description    String?
-  datasource     String?
-  platform       String?
-  element_type   String?
-  access_control String?
-  change_control String?
-  audit          String?
+  access_point_id             Int                           @id
+  element_name                String?
+  description                 String?
+  datasource                  String?
+  platform                    String?
+  element_type                String?
+  access_control              String?
+  change_control              String?
+  audit                       String?
+  access_entitlement_elements access_entitlement_elements[]
 }
 
 model manage_global_condition_logic_attributes {
@@ -238,4 +239,13 @@ model controls {
   revision_date         String?
   created_by            String?
   created_date          String?
+}
+
+model access_entitlement_elements {
+  entitlement_id             Int
+  access_point_id            Int
+  access_points_elements     access_points_elements     @relation(fields: [access_point_id], references: [access_point_id], onDelete: NoAction, onUpdate: NoAction)
+  manage_access_entitlements manage_access_entitlements @relation(fields: [entitlement_id], references: [entitlement_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([entitlement_id, access_point_id])
 }
