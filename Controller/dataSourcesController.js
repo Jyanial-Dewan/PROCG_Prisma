@@ -1,5 +1,12 @@
 const prisma = require("../DB/db.config");
-
+// generate date
+const date = () => {
+  const time = new Date().toLocaleTimeString();
+  const currentDate = new Date().toLocaleDateString();
+  const date = `${currentDate}, ${time}`;
+  return date;
+};
+//Get Datasources
 exports.getDataSources = async (req, res) => {
   try {
     const result = await prisma.data_sources.findMany();
@@ -8,7 +15,7 @@ exports.getDataSources = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-//Get Unique User
+//Get Unique Datasource
 exports.getUniqueDataSource = async (req, res) => {
   try {
     const data_source_id = req.params.id;
@@ -26,18 +33,18 @@ exports.getUniqueDataSource = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-//Create User
+//Create Datasource
 exports.createDataSource = async (req, res) => {
   try {
-    // Validation  START/---------------------------------/
     const data = req.body;
-    const findDataSourceId = await prisma.data_sources.findUnique({
-      where: {
-        data_source_id: data.data_source_id,
-      },
-    });
-    if (findDataSourceId)
-      return res.status(408).json({ message: "Data Source Id already exist." });
+    //find max id and increment value
+    const response = await prisma.data_sources.findMany();
+    const id =
+      response.length > 0
+        ? Math.max(...response.map((item) => item.data_source_id)) + 1
+        : 1;
+
+    // Validation  START/---------------------------------/
     const findDataSourceName = await prisma.data_sources.findFirst({
       where: {
         datasource_name: data.datasource_name,
@@ -47,12 +54,7 @@ exports.createDataSource = async (req, res) => {
       return res
         .status(408)
         .json({ message: "Data Source Name already exist." });
-    if (
-      !data.datasource_name ||
-      !data.description
-      // !user_data.email_addresses.length ||
-      // !user_data.tenant_id
-    ) {
+    if (!data.datasource_name || !data.description) {
       return res.status(422).json({
         message: "data source name and description is Required",
       });
@@ -60,16 +62,15 @@ exports.createDataSource = async (req, res) => {
     // Validation  End/---------------------------------/
     const result = await prisma.data_sources.create({
       data: {
-        data_source_id: data.data_source_id,
+        data_source_id: id,
         datasource_name: data.datasource_name,
         description: data.description,
         application_type: data.application_type,
         application_type_version: data.application_type_version,
-        last_access_synchronization_date: data.last_access_synchronization_date,
+        last_access_synchronization_date: date(),
         last_access_synchronization_status:
           data.last_access_synchronization_status,
-        last_transaction_synchronization_date:
-          data.last_transaction_synchronization_date,
+        last_transaction_synchronization_date: date(),
         last_transaction_synchronization_status:
           data.last_transaction_synchronization_status,
         default_datasource: data.default_datasource,
@@ -82,7 +83,7 @@ exports.createDataSource = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-//Update User
+//Update Datasource
 exports.updateDataSource = async (req, res) => {
   try {
     const data = req.body;
@@ -114,16 +115,14 @@ exports.updateDataSource = async (req, res) => {
         data_source_id: id,
       },
       data: {
-        data_source_id: data.data_source_id,
         datasource_name: data.datasource_name,
         description: data.description,
         application_type: data.application_type,
         application_type_version: data.application_type_version,
-        last_access_synchronization_date: data.last_access_synchronization_date,
+        last_access_synchronization_date: date(),
         last_access_synchronization_status:
           data.last_access_synchronization_status,
-        last_transaction_synchronization_date:
-          data.last_transaction_synchronization_date,
+        last_transaction_synchronization_date: date(),
         last_transaction_synchronization_status:
           data.last_transaction_synchronization_status,
         default_datasource: data.default_datasource,
@@ -134,7 +133,7 @@ exports.updateDataSource = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
+// Delete Datasource
 exports.deleteDataSource = async (req, res) => {
   try {
     const id = Number(req.params.id);

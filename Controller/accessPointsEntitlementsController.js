@@ -7,13 +7,13 @@ exports.getAccessPointsEntitlement = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-//Get Unique User
+//Get Unique Data
 exports.getUniqueAccessPointsEntitlement = async (req, res) => {
   try {
     const id = req.params.id;
     const result = await prisma.access_points_elements.findUnique({
       where: {
-        id: Number(id),
+        access_point_id: Number(id),
       },
     });
     if (result) {
@@ -28,7 +28,11 @@ exports.getUniqueAccessPointsEntitlement = async (req, res) => {
 //Create User
 exports.createAccessPointsEntitlement = async (req, res) => {
   const response = await prisma.access_points_elements.findMany();
-  const id = Math.max(...response.map((item) => item.id));
+  const id =
+    response.length > 0
+      ? Math.max(...response.map((item) => item.access_point_id)) + 1
+      : 1;
+  console.log(id);
   try {
     // Validation  START/---------------------------------/
     const data = req.body;
@@ -40,19 +44,16 @@ exports.createAccessPointsEntitlement = async (req, res) => {
         },
       });
     if (findAccessPointsElementName)
-      return res
-        .status(408)
-        .json({ message: "Entitlement Name already exist." });
+      return res.status(408).json({ message: "Element Name already exist." });
     if (!data.element_name || !data.description) {
       return res.status(422).json({
-        message: "data source name and description is Required",
+        message: "Element name and description is Required",
       });
     }
     // Validation  End/---------------------------------/
     const result = await prisma.access_points_elements.create({
       data: {
-        id: response.length > 0 ? id + 1 : 1,
-        entitlement_id: data.entitlement_id,
+        access_point_id: id,
         element_name: data.element_name,
         description: data.description,
         datasource: data.datasource,
@@ -84,21 +85,17 @@ exports.updateAccessPointsEntitlement = async (req, res) => {
     });
     if (!data.element_name || !data.description) {
       return res.status(422).json({
-        message: "data source name and description is Required",
+        message: "Element name and description is Required",
       });
     } else if (findExistName) {
-      return res
-        .status(408)
-        .json({ message: "Data Source name already exist." });
+      return res.status(408).json({ message: "Element name already exist." });
     }
     // Validation  End/---------------------------------/
     const result = await prisma.access_points_elements.update({
       where: {
-        id: id,
+        access_point_id: id,
       },
       data: {
-        id: id,
-        entitlement_id: data.entitlement_id,
         element_name: data.element_name,
         description: data.description,
         datasource: data.datasource,
@@ -123,16 +120,16 @@ exports.deleteAccessPointsEntitlement = async (req, res) => {
     const findAccessPointsEntitlementId =
       await prisma.access_points_elements.findUnique({
         where: {
-          id: id,
+          access_point_id: id,
         },
       });
     if (!findAccessPointsEntitlementId)
-      return res.status(404).json({ message: "Data Source not found." });
+      return res.status(404).json({ message: "Access Point not found." });
 
     // Validation  End/---------------------------------/
     const result = await prisma.access_points_elements.delete({
       where: {
-        id: id,
+        access_point_id: id,
       },
     });
     return res.status(200).json(result);
