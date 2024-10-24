@@ -1,4 +1,5 @@
 const prisma = require("../DB/db.config");
+const currentDate = new Date();
 exports.getAccessPointsEntitlement = async (req, res) => {
   try {
     const result = await prisma.access_points_elements.findMany();
@@ -56,12 +57,18 @@ exports.createAccessPointsEntitlement = async (req, res) => {
         access_point_id: id,
         element_name: data.element_name,
         description: data.description,
-        datasource: data.datasource,
         platform: data.platform,
         element_type: data.element_type,
         access_control: data.access_control,
         change_control: data.change_control,
         audit: data.audit,
+        created_by: data.created_by,
+        created_on: currentDate,
+        last_updated_by: data.last_updated_by,
+        last_updated_on: currentDate,
+        data_sources: {
+          connect: { data_source_id: data.data_source_id },
+        },
       },
     });
     if (result) {
@@ -98,12 +105,18 @@ exports.updateAccessPointsEntitlement = async (req, res) => {
       data: {
         element_name: data.element_name,
         description: data.description,
-        datasource: data.datasource,
         platform: data.platform,
         element_type: data.element_type,
         access_control: data.access_control,
         change_control: data.change_control,
         audit: data.audit,
+        created_by: data.created_by,
+        created_on: currentDate,
+        last_updated_by: data.last_updated_by,
+        last_updated_on: currentDate,
+        data_sources: {
+          connect: { data_source_id: data.data_source_id },
+        },
       },
     });
     return res.status(200).json(result);
@@ -134,6 +147,76 @@ exports.deleteAccessPointsEntitlement = async (req, res) => {
     });
     return res.status(200).json(result);
   } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+exports.upsertAccessPointsEntitlement = async (req, res) => {
+  const data = req.body.upsertAttributes || req.body;
+
+  if (!Array.isArray(data)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid input: 'Data' should be an array" });
+  }
+
+  const upsertResults = [];
+  const currentDate = new Date(); // Ensure currentDate is defined
+
+  try {
+    for (const item of data) {
+      const dataSourceId = item.data_source_id;
+      const response = await prisma.access_points_elements.findMany();
+      const id =
+        response.length > 0
+          ? Math.max(...response.map((elem) => elem.access_point_id)) + 1
+          : 1;
+
+      const result = await prisma.access_points_elements.upsert({
+        where: { access_point_id: item.access_point_id },
+        update: {
+          element_name: item.element_name,
+          description: item.description,
+          platform: item.platform,
+          element_type: item.element_type,
+          access_control: item.access_control,
+          change_control: item.change_control,
+          audit: item.audit,
+          created_by: item.created_by,
+          created_on: currentDate,
+          last_updated_by: item.last_updated_by,
+          last_updated_on: currentDate,
+          data_sources: {
+            connect: dataSourceId
+              ? { data_source_id: dataSourceId }
+              : undefined,
+          },
+        },
+        create: {
+          access_point_id: id,
+          element_name: item.element_name,
+          description: item.description,
+          platform: item.platform,
+          element_type: item.element_type,
+          access_control: item.access_control,
+          change_control: item.change_control,
+          audit: item.audit,
+          created_by: item.created_by,
+          created_on: currentDate,
+          last_updated_by: item.last_updated_by,
+          last_updated_on: currentDate,
+          data_sources: {
+            connect: dataSourceId
+              ? { data_source_id: dataSourceId }
+              : undefined,
+          },
+        },
+      });
+      upsertResults.push(result);
+    }
+
+    return res.status(200).json(upsertResults);
+  } catch (error) {
+    console.error("Error in upsert operation:", error);
     return res.status(500).json({ error: error.message });
   }
 };

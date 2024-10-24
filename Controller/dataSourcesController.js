@@ -1,11 +1,12 @@
 const prisma = require("../DB/db.config");
 // generate date
-const date = () => {
-  const time = new Date().toLocaleTimeString();
-  const currentDate = new Date().toLocaleDateString();
-  const date = `${currentDate}, ${time}`;
-  return date;
-};
+const currentDate = new Date();
+// const date = () => {
+//   const time = new Date().toLocaleTimeString();
+//   const currentDate = new Date().toLocaleDateString();
+//   const date = `${currentDate}, ${time}`;
+//   return date;
+// };
 //Get Datasources
 exports.getDataSources = async (req, res) => {
   try {
@@ -67,13 +68,15 @@ exports.createDataSource = async (req, res) => {
         description: data.description,
         application_type: data.application_type,
         application_type_version: data.application_type_version,
-        last_access_synchronization_date: date(),
+        last_access_synchronization_date: currentDate,
         last_access_synchronization_status:
           data.last_access_synchronization_status,
-        last_transaction_synchronization_date: date(),
+        last_transaction_synchronization_date: currentDate,
         last_transaction_synchronization_status:
           data.last_transaction_synchronization_status,
         default_datasource: data.default_datasource,
+        created_by: data.created_by,
+        last_updated_by: data.last_updated_by,
       },
     });
     if (result) {
@@ -119,13 +122,15 @@ exports.updateDataSource = async (req, res) => {
         description: data.description,
         application_type: data.application_type,
         application_type_version: data.application_type_version,
-        last_access_synchronization_date: date(),
+        last_access_synchronization_date: currentDate,
         last_access_synchronization_status:
           data.last_access_synchronization_status,
-        last_transaction_synchronization_date: date(),
+        last_transaction_synchronization_date: currentDate,
         last_transaction_synchronization_status:
           data.last_transaction_synchronization_status,
         default_datasource: data.default_datasource,
+        created_by: data.created_by,
+        last_updated_by: data.last_updated_by,
       },
     });
     return res.status(200).json(result);
