@@ -2,8 +2,8 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
+const { Redis } = require("ioredis");
 const app = express();
-const prisma = require("./DB/db.config");
 
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
@@ -33,6 +33,32 @@ app.use(require("./Routes/index"));
 //Socket
 let users = {};
 
+const pub = new Redis({
+  host: process.env.VALKEY_HOST,
+  port: 21896,
+  username: process.env.VALKEY_USERNAME,
+  password: process.env.VALKEY_PASSWORD,
+  maxRetriesPerRequest: null, // Disable retry limit
+  connectTimeout: 10000, // Optional: increase timeout for connections
+  retryStrategy(times) {
+    const delay = Math.min(times * 100, 3000); // Backoff strategy, increasing delay
+    return delay;
+  },
+});
+
+const sub = new Redis({
+  host: process.env.VALKEY_HOST,
+  port: 21896,
+  username: process.env.VALKEY_USERNAME,
+  password: process.env.VALKEY_PASSWORD,
+  maxRetriesPerRequest: null, // Disable retry limit
+  connectTimeout: 10000, // Optional: increase timeout for connections
+  retryStrategy(times) {
+    const delay = Math.min(times * 100, 3000); // Backoff strategy, increasing delay
+    return delay;
+  },
+});
+
 io.use((socket, next) => {
   const key = socket.handshake.query.key;
 
@@ -45,7 +71,7 @@ io.use((socket, next) => {
       users[key] = [];
     }
     users[key].push(socket.id);
-
+    sub.subscribe("NOTIFICATION-MESSAGES");
     next();
   }
 });
@@ -65,71 +91,80 @@ io.on("connection", (socket) => {
       involvedusers,
       readers,
     }) => {
-      await prisma.messages.create({
-        data: {
-          id: id,
-          sender: sender,
-          recivers: recivers,
-          subject: subject,
-          body: body,
-          date: date,
-          status: status,
-          parentid: parentid,
-          involvedusers: involvedusers,
-          readers: readers,
-        },
+      await pub.publish(
+        "NOTIFICATION-MESSAGES",
+        JSON.stringify({ id, sender, subject, date, parentid, recivers })
+      );
+
+      sub.on("message", (channel, message) => {
+        if (channel === "NOTIFICATION-MESSAGES") {
+          const newMessage = JSON.parse(message);
+          console.log(newMessage);
+          newMessage.recivers.forEach((reciver) => {
+            io.to(reciver).emit("message", newMessage);
+          });
+        }
       });
+      // recivers.forEach((reciver) => {
+      //   io.to(reciver).emit("message", {
+      //     id,
+      //     sender,
+      //     recivers,
+      //     subject,
+      //     body,
+      //     date,
+      //     status,
+      //     parentid,
+      //     involvedusers,
+      //     readers,
+      //   });
+      // });
 
-      recivers.forEach((reciver) => {
-        io.to(reciver).emit("message", {
-          id,
-          sender,
-          recivers,
-          subject,
-          body,
-          date,
-          status,
-          parentid,
-          involvedusers,
-          readers,
-        });
+      io.to(sender).emit("sentMessage", {
+        id,
+        sender,
+        recivers,
+        subject,
+        body,
+        date,
+        status,
+        parentid,
+        involvedusers,
+        readers,
+      });
+    }
+  );
 
-        // if(!offlineMessages[reciver]) {
-        //   offlineMessages[reciver] = [];
-        // }
-
-        // // offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers, readers});
-
-        // const onlineUsers = io.sockets.adapter.rooms.get(reciver) || [];
-
-        // if (users[reciver]?.length !== onlineUsers.size) {
-        //   offlineMessages[reciver].push({id, sender, recivers, subject, body, date, status, parentid, involvedusers, readers});
-        // }
+  socket.on(
+    "sendDraft",
+    ({
+      id,
+      sender,
+      recivers,
+      subject,
+      body,
+      date,
+      status,
+      parentid,
+      involvedusers,
+      readers,
+    }) => {
+      io.to(sender).emit("draftMessage", {
+        id,
+        sender,
+        recivers,
+        subject,
+        body,
+        date,
+        status,
+        parentid,
+        involvedusers,
+        readers,
       });
     }
   );
 
   socket.on("read", async ({ id, user }) => {
-    const messagesToUpdate = await prisma.messages.findMany({
-      where: {
-        parentid: id,
-      },
-    });
-
-    for (const message of messagesToUpdate) {
-      const updatedReaders = message.readers.filter(
-        (reader) => reader !== user
-      );
-      await prisma.messages.update({
-        where: {
-          id: message.id,
-        },
-        data: {
-          readers: updatedReaders,
-        },
-      });
-    }
-
     io.to(user).emit("sync", id);
   });
 
