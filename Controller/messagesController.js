@@ -126,17 +126,30 @@ exports.deleteMessage = async (req, res) => {
 
 exports.getRecievedMessages = async (req, res) => {
   try {
-    const user = req.params.user;
+    const { user, page } = req.params;
+    const pageNumber = parseInt(page);
+    const limit = 5;
+    let startNumber = 0;
+    const endNumber = pageNumber * limit;
+    if (pageNumber > 1) {
+      const pageInto = pageNumber - 1;
+      startNumber = pageInto * limit;
+    }
     const result = await prisma.messages.findMany({
       where: {
         recivers: {
           array_contains: user,
         },
       },
+      orderBy: {
+        date: "desc",
+      },
     });
 
     if (result) {
-      return res.status(200).json(result);
+      const receivedMessages = result.filter((msg) => msg.status === "Sent");
+      const limitedMessages = receivedMessages.slice(startNumber, endNumber);
+      return res.status(200).json(limitedMessages);
     } else {
       return res.status(404).json({ error: "User not found." });
     }
@@ -154,10 +167,16 @@ exports.getNotificationMessages = async (req, res) => {
           array_contains: user,
         },
       },
+      orderBy: {
+        date: "desc",
+      },
     });
 
     if (result) {
-      return res.status(200).json(result);
+      const notificationMessages = result.filter(
+        (msg) => msg.status === "Sent"
+      );
+      return res.status(200).json(notificationMessages);
     } else {
       return res.status(404).json({ error: "User not found." });
     }
@@ -168,15 +187,60 @@ exports.getNotificationMessages = async (req, res) => {
 
 exports.getSentMessages = async (req, res) => {
   try {
-    const user = req.params.user;
+    const { user, page } = req.params;
+    const pageNumber = parseInt(page);
+    const limit = 5;
+    let startNumber = 0;
+    const endNumber = pageNumber * limit;
+    if (pageNumber > 1) {
+      const pageInto = pageNumber - 1;
+      startNumber = pageInto * limit;
+    }
     const result = await prisma.messages.findMany({
       where: {
         sender: user,
       },
+      orderBy: {
+        date: "desc",
+      },
     });
 
     if (result) {
-      return res.status(200).json(result);
+      const sentMessages = result.filter((msg) => msg.status === "Sent");
+      const limitedMessages = sentMessages.slice(startNumber, endNumber);
+      return res.status(200).json(limitedMessages);
+    } else {
+      return res.status(404).json({ error: "User not found." });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getDraftMessages = async (req, res) => {
+  try {
+    const { user, page } = req.params;
+    const pageNumber = parseInt(page);
+    const limit = 5;
+    let startNumber = 0;
+    const endNumber = pageNumber * limit;
+    if (pageNumber > 1) {
+      const pageInto = pageNumber - 1;
+      startNumber = pageInto * limit;
+    }
+    const result = await prisma.messages.findMany({
+      where: {
+        sender: user,
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    if (result) {
+      const draftMessages = result.filter((msg) => msg.status === "Draft");
+      const limitedMessages = draftMessages.slice(startNumber, endNumber);
+      return res.status(200).json(limitedMessages);
     } else {
       return res.status(404).json({ error: "User not found." });
     }
@@ -186,8 +250,7 @@ exports.getSentMessages = async (req, res) => {
 };
 
 exports.updateReaders = async (req, res) => {
-  const { id } = req.params;
-  const { user } = req.body;
+  const { id, user } = req.params;
 
   try {
     const messagesToUpdate = await prisma.messages.findMany({
@@ -211,6 +274,78 @@ exports.updateReaders = async (req, res) => {
     }
 
     res.json({ message: "Readers field updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getTotalRecievedMessages = async (req, res) => {
+  try {
+    const user = req.params.user;
+    const result = await prisma.messages.findMany({
+      where: {
+        recivers: {
+          array_contains: user,
+        },
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    if (result) {
+      const receivedMessages = result.filter((msg) => msg.status === "Sent");
+
+      return res.status(200).json({ total: receivedMessages.length });
+    } else {
+      return res.status(404).json({ error: "User not found." });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getTotalSentMessages = async (req, res) => {
+  try {
+    const user = req.params.user;
+    const result = await prisma.messages.findMany({
+      where: {
+        sender: user,
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    if (result) {
+      const sentMessages = result.filter((msg) => msg.status === "Sent");
+      return res.status(200).json({ total: sentMessages.length });
+    } else {
+      return res.status(404).json({ error: "User not found." });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getTotalDraftMessages = async (req, res) => {
+  try {
+    const user = req.params.user;
+    const result = await prisma.messages.findMany({
+      where: {
+        sender: user,
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    if (result) {
+      const draftMessages = result.filter((msg) => msg.status === "Draft");
+      return res.status(200).json({ total: draftMessages.length });
+    } else {
+      return res.status(404).json({ error: "User not found." });
+    }
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
