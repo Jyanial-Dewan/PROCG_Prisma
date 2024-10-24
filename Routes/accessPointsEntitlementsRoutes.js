@@ -20,5 +20,9 @@ router.put(
   "/:id",
   accessPointsEntitlementController.updateAccessPointsEntitlement
 );
+router.post(
+  "/upsert",
+  accessPointsEntitlementController.upsertAccessPointsEntitlement
+);
 
 module.exports = router;

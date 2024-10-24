@@ -9,7 +9,6 @@ exports.getAccessEntitlementElement = async (req, res) => {
   }
 };
 exports.createAccessEntitlementElement = async (req, res) => {
-  console.log(req.body);
   try {
     const result = await prisma.access_entitlement_elements.create({
       data: req.body,

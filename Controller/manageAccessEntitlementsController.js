@@ -1,5 +1,5 @@
 const prisma = require("../DB/db.config");
-const currentDate = new Date().toLocaleDateString();
+const currentDate = new Date();
 //Get Data
 exports.getManageAccessEntitlements = async (req, res) => {
   try {
@@ -65,7 +65,7 @@ exports.createManageAccessEntitlement = async (req, res) => {
         comments: data.comments,
         status: data.status,
         effective_date: currentDate,
-        revison: 0,
+        revison: "0",
         revision_date: currentDate,
         created_on: currentDate,
         last_updated_on: currentDate,
@@ -121,7 +121,7 @@ exports.updateManageAccessEntitlement = async (req, res) => {
         comments: data.comments,
         status: data.status,
         effective_date: data.effective_date,
-        revison: findManageAccessEntitlement.revison + 1,
+        revison: Number(findManageAccessEntitlement.revison) + 1,
         revision_date: currentDate,
         created_on: data.created_on,
         last_updated_on: currentDate,

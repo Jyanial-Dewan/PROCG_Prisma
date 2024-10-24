@@ -111,16 +111,21 @@ model def_users {
 }
 
 model data_sources {
-  data_source_id                          Int     @id
-  datasource_name                         String?
-  description                             String?
-  application_type                        String?
-  application_type_version                String?
-  last_access_synchronization_date        String?
-  last_access_synchronization_status      String?
-  last_transaction_synchronization_date   String?
-  last_transaction_synchronization_status String?
-  default_datasource                      String?
+  data_source_id                          Int                      @id
+  datasource_name                         String?                  @db.VarChar(50)
+  description                             String?                  @db.VarChar(250)
+  application_type                        String?                  @db.VarChar(50)
+  application_type_version                String?                  @db.VarChar(50)
+  last_access_synchronization_date        DateTime?                @db.Timestamp(6)
+  last_access_synchronization_status      String?                  @db.VarChar(50)
+  last_transaction_synchronization_date   DateTime?                @db.Timestamp(6)
+  last_transaction_synchronization_status String?                  @db.VarChar(50)
+  default_datasource                      String?                  @db.VarChar(50)
+  created_by                              String?                  @db.VarChar(50)
+  created_on                              DateTime?                @default(now()) @db.Timestamp(6)
+  last_updated_by                         String?                  @db.VarChar(50)
+  last_updated_on                         DateTime?                @default(now()) @db.Timestamp(6)
+  access_points_elements                  access_points_elements[]
 }
 
 model messages {
@@ -138,31 +143,36 @@ model messages {
 
 model manage_access_entitlements {
   entitlement_id              Int                           @id
-  entitlement_name            String
-  description                 String?
-  comments                    String?
-  status                      String
-  effective_date              String
-  revison                     Int?
-  revision_date               String?
-  created_on                  String?
-  last_updated_on             String?
-  last_updated_by             String?
-  created_by                  String?
+  entitlement_name            String                        @db.VarChar(150)
+  description                 String?                       @db.VarChar(250)
+  comments                    String?                       @db.VarChar(200)
+  status                      String                        @db.VarChar(50)
+  effective_date              DateTime                      @db.Date
+  revison                     String?                       @db.VarChar(10)
+  revision_date               DateTime?                     @db.Date
+  created_by                  String?                       @db.VarChar(50)
+  created_on                  DateTime?                     @default(now()) @db.Timestamp(6)
+  last_updated_by             String?                       @db.VarChar(50)
+  last_updated_on             DateTime?                     @default(now()) @db.Timestamp(6)
   access_entitlement_elements access_entitlement_elements[]
 }
 
 model access_points_elements {
   access_point_id             Int                           @id
-  element_name                String?
-  description                 String?
-  datasource                  String?
-  platform                    String?
-  element_type                String?
-  access_control              String?
-  change_control              String?
-  audit                       String?
+  data_source_id              Int
+  element_name                String?                       @db.VarChar(150)
+  description                 String?                       @db.VarChar(250)
+  platform                    String?                       @db.VarChar(50)
+  element_type                String?                       @db.VarChar(50)
+  access_control              String?                       @db.VarChar(10)
+  change_control              String?                       @db.VarChar(10)
+  audit                       String?                       @db.VarChar(50)
+  created_by                  String?                       @db.VarChar(50)
+  created_on                  DateTime?                     @default(now()) @db.Timestamp(6)
+  last_updated_by             String?                       @db.VarChar(50)
+  last_updated_on             DateTime?                     @default(now()) @db.Timestamp(6)
   access_entitlement_elements access_entitlement_elements[]
+  data_sources                data_sources                  @relation(fields: [data_source_id], references: [data_source_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_data_source")
 }
 
 model manage_global_condition_logic_attributes {
@@ -244,6 +254,10 @@ model controls {
 model access_entitlement_elements {
   entitlement_id             Int
   access_point_id            Int
+  created_by                 String?                    @db.VarChar(50)
+  created_on                 DateTime?                  @default(now()) @db.Timestamp(6)
+  last_updated_by            String?                    @db.VarChar(50)
+  last_updated_on            DateTime?                  @default(now()) @db.Timestamp(6)
   access_points_elements     access_points_elements     @relation(fields: [access_point_id], references: [access_point_id], onDelete: NoAction, onUpdate: NoAction)
   manage_access_entitlements manage_access_entitlements @relation(fields: [entitlement_id], references: [entitlement_id], onDelete: NoAction, onUpdate: NoAction)
 
