@@ -34,9 +34,9 @@ exports.createDefTenant = async (req, res) => {
   try {
     const defTenantData = req.body;
 
-    const findDefTenats = await prisma.def_tenants.findUnique({
+    const findDefTenats = await prisma.def_tenants.findFirst({
       where: {
-        tenant_id: defTenantData.tenant_id,
+        tenant_name: defTenantData.tenant_name,
       },
     });
 
@@ -44,20 +44,13 @@ exports.createDefTenant = async (req, res) => {
       return res.status(408).json({ message: "Tenant already exist" });
     }
 
-    if (!defTenantData.tenant_id || !defTenantData.tenant_name) {
-      return res
-        .status(422)
-        .json({ message: "Tenant_id and Tenant name is required" });
-    }
-
     const newDefTenant = await prisma.def_tenants.create({
       data: {
-        tenant_id: defTenantData.tenant_id,
         tenant_name: defTenantData.tenant_name,
       },
     });
 
-    return res.status(201).json({ newDefTenant });
+    return res.status(201).json(newDefTenant);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

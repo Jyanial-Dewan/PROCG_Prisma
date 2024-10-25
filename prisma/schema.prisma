@@ -62,9 +62,8 @@ model def_tenant_enterprise_setup {
 }
 
 model def_tenants {
-  tenant_id   Int         @id
-  tenant_name String?
-  def_users   def_users[]
+  tenant_id   Int    @id @default(autoincrement())
+  tenant_name String @db.VarChar(50)
 }
 
 model def_user_credentials {
@@ -107,7 +106,6 @@ model def_users {
   tenant_id                   Int?
   def_user_granted_privileges def_user_granted_privileges[]
   def_user_granted_roles      def_user_granted_roles[]
-  def_tenants                 def_tenants?                  @relation(fields: [tenant_id], references: [tenant_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model data_sources {

@@ -59,24 +59,18 @@ exports.createDefUserCredential = async (req, res) => {
   try {
     // Validation  START/---------------------------------/
     const user_data = req.body;
-    const findDefUserId = await prisma.def_user_credentials.findUnique({
-      where: {
-        user_id: user_data.user_id,
+    const DefUsers = await prisma.def_user_credentials.findMany();
+    const id =
+      DefUsers.length > 0
+        ? Math.max(...DefUsers.map((item) => item.user_id)) + 1
+        : 1;
+    const result = await prisma.def_user_credentials.create({
+      data: {
+        user_id: id,
+        password: await hashPassword(user_data.password),
       },
     });
-    if (findDefUserId) {
-      return res
-        .status(408)
-        .json({ message: "User Credential Id already exist." });
-    } else {
-      const result = await prisma.def_user_credentials.create({
-        data: {
-          user_id: user_data.user_id,
-          password: await hashPassword(user_data.password),
-        },
-      });
-      return res.status(201).json({ result });
-    }
+    return res.status(201).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -85,6 +79,7 @@ exports.createDefUserCredential = async (req, res) => {
 exports.updateDefUserCredential = async (req, res) => {
   try {
     const user_data = req.body;
+    console.log(user_data);
     const user_id = Number(req.params.user_id);
 
     const findDefUserId = await prisma.def_user_credentials.findUnique({
@@ -99,10 +94,10 @@ exports.updateDefUserCredential = async (req, res) => {
           user_id: user_id,
         },
         data: {
-          password: hashPassword(user_data.password),
+          password: await hashPassword(user_data.password),
         },
       });
-      return res.status(200).json({ result });
+      return res.status(200).json(result);
     } else {
       return res.status(404).json({ message: "User Credential Id not found." });
     }
