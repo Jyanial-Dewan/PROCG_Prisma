@@ -136,3 +136,25 @@ exports.deleteDefUser = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+// perPageUsers Data
+exports.perPageUsers = async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  const offset = (page - 1) * limit;
+  try {
+    const results = await prisma.def_users.findMany({
+      take: limit,
+      skip: offset,
+    });
+    const totalCount = await prisma.def_users.count();
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return res.status(200).json({
+      results,
+      totalPages,
+      currentPage: page,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};

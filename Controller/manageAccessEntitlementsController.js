@@ -115,15 +115,15 @@ exports.updateManageAccessEntitlement = async (req, res) => {
         entitlement_id: id,
       },
       data: {
-        entitlement_id: data.entitlement_id,
+        entitlement_id: id,
         entitlement_name: data.entitlement_name,
         description: data.description,
         comments: data.comments,
         status: data.status,
-        effective_date: data.effective_date,
-        revison: Number(findManageAccessEntitlement.revison) + 1,
+        effective_date: currentDate,
+        revison: String(Number(findManageAccessEntitlement.revison) + 1),
         revision_date: currentDate,
-        created_on: data.created_on,
+        created_on: currentDate,
         last_updated_on: currentDate,
         last_updated_by: data.last_updated_by,
         created_by: data.created_by,
@@ -156,6 +156,28 @@ exports.deleteManageAccessEntitlement = async (req, res) => {
       },
     });
     return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+// perPageManageAccessEntitlement Data
+exports.perPageManageAccessEntitlement = async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  const offset = (page - 1) * limit;
+  try {
+    const results = await prisma.manage_access_entitlements.findMany({
+      take: limit,
+      skip: offset,
+    });
+    const totalCount = await prisma.manage_access_entitlements.count();
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return res.status(200).json({
+      results,
+      totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
