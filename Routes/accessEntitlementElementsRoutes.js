@@ -8,6 +8,10 @@ router.get(
   accessEntitlementElementsController.getAccessEntitlementElement
 );
 router.get(
+  "/p",
+  accessEntitlementElementsController.perPageAccessEntitlementElement
+);
+router.get(
   "/:id",
   accessEntitlementElementsController.getUniqueAccessEntitlementElement
 );

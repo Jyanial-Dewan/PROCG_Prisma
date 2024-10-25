@@ -59,3 +59,25 @@ exports.deleteAccessEntitlementElement = async (req, res) => {
   } finally {
   }
 };
+// perPageAccessEntitlementElement Data
+exports.perPageAccessEntitlementElement = async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  const offset = (page - 1) * limit;
+  try {
+    const results = await prisma.access_entitlement_elements.findMany({
+      take: limit,
+      skip: offset,
+    });
+    const totalCount = await prisma.access_entitlement_elements.count();
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return res.status(200).json({
+      results,
+      totalPages,
+      currentPage: page,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};

@@ -127,3 +127,35 @@ exports.updateDefTenant = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+exports.upsertDefTenant = async (req, res) => {
+  const data = req.body.upsertAttributes || req.body;
+
+  if (!Array.isArray(data)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid input: 'Data' should be an array" });
+  }
+
+  const upsertResults = [];
+
+  try {
+    for (const item of data) {
+      const result = await prisma.def_tenants.upsert({
+        where: { tenant_id: item.tenant_id },
+        update: {
+          tenant_id: data.tenant_id,
+          tenant_name: item.tenant_name,
+        },
+        create: {
+          tenant_name: item.tenant_name,
+        },
+      });
+      upsertResults.push(result);
+    }
+
+    return res.status(200).json(upsertResults);
+  } catch (error) {
+    console.error("Error in upsert operation:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};

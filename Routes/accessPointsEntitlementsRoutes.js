@@ -4,6 +4,7 @@ const accessPointsEntitlementController = require("../Controller/accessPointsEnt
 const router = Router();
 
 router.get("/", accessPointsEntitlementController.getAccessPointsEntitlement);
+router.get("/p", accessPointsEntitlementController.perPageAccessPoints);
 router.get(
   "/:id",
   accessPointsEntitlementController.getUniqueAccessPointsEntitlement
