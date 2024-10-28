@@ -34,7 +34,7 @@ exports.getUniqueMessage = async (req, res) => {
 
 exports.getReplyMessage = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.parentid;
     const result = await prisma.messages.findMany({
       where: {
         parentid: id,
@@ -250,12 +250,12 @@ exports.getDraftMessages = async (req, res) => {
 };
 
 exports.updateReaders = async (req, res) => {
-  const { id, user } = req.params;
+  const { parentid, user } = req.params;
 
   try {
     const messagesToUpdate = await prisma.messages.findMany({
       where: {
-        parentid: id,
+        parentid: parentid,
       },
     });
 
