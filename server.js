@@ -101,7 +101,7 @@ io.on("connection", (socket) => {
           const newMessage = JSON.parse(message);
           console.log(newMessage);
           newMessage.recivers.forEach((reciver) => {
-            io.to(reciver).emit("message", newMessage);
+            io.to(reciver).emit("receivedMessage", newMessage);
           });
         }
       });
