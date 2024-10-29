@@ -2,7 +2,12 @@ const prisma = require("../DB/db.config");
 
 exports.defTenants = async (req, res) => {
   try {
-    const defTenants = await prisma.def_tenants.findMany();
+    const defTenants = await prisma.def_tenants.findMany({
+      //sorting desc
+      orderBy: {
+        tenant_id: "desc",
+      },
+    });
 
     return res.status(200).json(defTenants);
   } catch (error) {
@@ -82,13 +87,13 @@ exports.deleteDefTenant = async (req, res) => {
         .json({ message: "Cannot delete tenant; there are related users." });
     }
 
-    const deletedDefTenant = await prisma.def_tenants.delete({
+    await prisma.def_tenants.delete({
       where: {
         tenant_id: defTenantID,
       },
     });
 
-    return res.status(200).json({ deletedDefTenant });
+    return res.status(200).json({ result: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

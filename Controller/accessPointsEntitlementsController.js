@@ -2,7 +2,12 @@ const prisma = require("../DB/db.config");
 const currentDate = new Date();
 exports.getAccessPointsEntitlement = async (req, res) => {
   try {
-    const result = await prisma.access_points_elements.findMany();
+    const result = await prisma.access_points_elements.findMany({
+      //sorting desc
+      orderBy: {
+        access_point_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -140,12 +145,12 @@ exports.deleteAccessPointsEntitlement = async (req, res) => {
       return res.status(404).json({ message: "Access Point not found." });
 
     // Validation  End/---------------------------------/
-    const result = await prisma.access_points_elements.delete({
+    await prisma.access_points_elements.delete({
       where: {
         access_point_id: id,
       },
     });
-    return res.status(200).json(result);
+    return res.status(200).json({ result: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -229,6 +234,9 @@ exports.perPageAccessPoints = async (req, res) => {
     const results = await prisma.access_points_elements.findMany({
       take: limit,
       skip: offset,
+      orderBy: {
+        access_point_id: "desc",
+      },
     });
     const totalCount = await prisma.access_points_elements.count();
     const totalPages = Math.ceil(totalCount / limit);
@@ -240,5 +248,34 @@ exports.perPageAccessPoints = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
+  }
+};
+exports.filterAccessPointsById = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const offset = (page - 1) * limit;
+
+  const idsParam = req.query.ids;
+  const stringArray = idsParam.split(",");
+  const ids = stringArray.map(Number);
+  try {
+    const accessPoints = await prisma.access_points_elements.findMany({
+      where: {
+        access_point_id: {
+          in: ids,
+        },
+      },
+      take: limit,
+      skip: offset,
+      orderBy: {
+        access_point_id: "desc",
+      },
+    });
+    res.status(200).json(accessPoints);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while querying the database." });
   }
 };

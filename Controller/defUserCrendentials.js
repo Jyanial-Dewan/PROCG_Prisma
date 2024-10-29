@@ -30,7 +30,11 @@ const hashPassword = (password) => {
 
 exports.getDefUserCredentials = async (req, res) => {
   try {
-    const result = await prisma.def_user_credentials.findMany();
+    const result = await prisma.def_user_credentials.findMany({
+      orderBy: {
+        user_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -115,12 +119,12 @@ exports.deleteDefUserCredential = async (req, res) => {
       },
     });
     if (findDefUserId) {
-      const result = await prisma.def_user_credentials.delete({
+      await prisma.def_user_credentials.delete({
         where: {
           user_id: user_id,
         },
       });
-      return res.status(200).json({ result });
+      return res.status(200).json({ result: "Deleted Successfully" });
     } else {
       return res
         .status(404)
