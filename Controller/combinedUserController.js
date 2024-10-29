@@ -107,3 +107,28 @@ exports.createCombinedUser = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+exports.getCombinedUsers = async (req, res) => {
+  try {
+    const users = await prisma.def_users.findMany();
+
+    const persons = await prisma.def_persons.findMany();
+
+    const credentials = await prisma.def_user_credentials.findMany();
+
+    const combinedUsers = users.map((user) => {
+      const person = persons.find((p) => p.user_id === user.user_id);
+      const credential = credentials.find((c) => c.user_id === user.user_id);
+
+      return {
+        ...user,
+        ...person,
+        ...credential,
+      };
+    });
+
+    return res.status(200).json(combinedUsers);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
