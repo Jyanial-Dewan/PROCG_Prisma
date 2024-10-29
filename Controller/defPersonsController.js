@@ -2,7 +2,12 @@ const prisma = require("../DB/db.config");
 
 exports.defPersons = async (req, res) => {
   try {
-    const result = await prisma.def_persons.findMany();
+    const result = await prisma.def_persons.findMany({
+      //sorting desc
+      orderBy: {
+        user_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -76,13 +81,13 @@ exports.deleteDefPerson = async (req, res) => {
       return res.status(404).json({ error: "Person not found" });
     }
 
-    const deletedDefPerson = await prisma.def_persons.delete({
+    await prisma.def_persons.delete({
       where: {
         user_id: defPersonID,
       },
     });
 
-    return res.status(204).json({ deletedDefPerson });
+    return res.status(200).json({ result: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

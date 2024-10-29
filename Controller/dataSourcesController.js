@@ -10,7 +10,12 @@ const currentDate = new Date();
 //Get Datasources
 exports.getDataSources = async (req, res) => {
   try {
-    const result = await prisma.data_sources.findMany();
+    const result = await prisma.data_sources.findMany({
+      //sorting desc
+      orderBy: {
+        data_source_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -153,12 +158,12 @@ exports.deleteDataSource = async (req, res) => {
       return res.status(404).json({ message: "Data Source not found." });
 
     // Validation  End/---------------------------------/
-    const result = await prisma.data_sources.delete({
+    await prisma.data_sources.delete({
       where: {
         data_source_id: id,
       },
     });
-    return res.status(200).json(result);
+    return res.status(200).json({ result: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -172,6 +177,9 @@ exports.perPageDataSources = async (req, res) => {
     const results = await prisma.data_sources.findMany({
       take: limit,
       skip: offset,
+      orderBy: {
+        data_source_id: "desc",
+      },
     });
     const totalCount = await prisma.data_sources.count();
     const totalPages = Math.ceil(totalCount / limit);
@@ -183,5 +191,34 @@ exports.perPageDataSources = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
+  }
+};
+exports.filterAccessPointsById = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const offset = (page - 1) * limit;
+
+  const idsParam = req.query.ids;
+  const stringArray = idsParam.split(",");
+  const ids = stringArray.map(Number);
+  try {
+    const accessPoints = await prisma.access_points_elements.findMany({
+      where: {
+        access_point_id: {
+          in: ids,
+        },
+      },
+      take: limit,
+      skip: offset,
+      orderBy: {
+        access_point_id: "desc",
+      },
+    });
+    res.status(200).json(accessPoints);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while querying the database." });
   }
 };

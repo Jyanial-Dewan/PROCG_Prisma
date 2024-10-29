@@ -3,7 +3,12 @@ const currentDate = new Date();
 //Get Data
 exports.getManageAccessEntitlements = async (req, res) => {
   try {
-    const result = await prisma.manage_access_entitlements.findMany();
+    const result = await prisma.manage_access_entitlements.findMany({
+      //sorting desc
+      orderBy: {
+        entitlement_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -150,12 +155,12 @@ exports.deleteManageAccessEntitlement = async (req, res) => {
       return res.status(404).json({ message: "Data Source not found." });
 
     // Validation  End/---------------------------------/
-    const result = await prisma.manage_access_entitlements.delete({
+    await prisma.manage_access_entitlements.delete({
       where: {
         entitlement_id: id,
       },
     });
-    return res.status(200).json(result);
+    return res.status(200).json({ result: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -169,6 +174,9 @@ exports.perPageManageAccessEntitlement = async (req, res) => {
     const results = await prisma.manage_access_entitlements.findMany({
       take: limit,
       skip: offset,
+      orderBy: {
+        entitlement_id: "desc",
+      },
     });
     const totalCount = await prisma.manage_access_entitlements.count();
     const totalPages = Math.ceil(totalCount / limit);

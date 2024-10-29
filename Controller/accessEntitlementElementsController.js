@@ -2,7 +2,12 @@ const prisma = require("../DB/db.config");
 //get Data
 exports.getAccessEntitlementElement = async (req, res) => {
   try {
-    const result = await prisma.access_entitlement_elements.findMany();
+    const result = await prisma.access_entitlement_elements.findMany({
+      //sorting desc
+      orderBy: {
+        entitlement_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -68,6 +73,9 @@ exports.perPageAccessEntitlementElement = async (req, res) => {
     const results = await prisma.access_entitlement_elements.findMany({
       take: limit,
       skip: offset,
+      orderBy: {
+        entitlement_id: "desc",
+      },
     });
     const totalCount = await prisma.access_entitlement_elements.count();
     const totalPages = Math.ceil(totalCount / limit);

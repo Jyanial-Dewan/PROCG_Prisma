@@ -1,7 +1,12 @@
 const prisma = require("../DB/db.config");
 exports.getControles = async (req, res) => {
   try {
-    const result = await prisma.controls.findMany();
+    const result = await prisma.controls.findMany({
+      //sorting desc
+      orderBy: {
+        control_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -148,12 +153,12 @@ exports.deleteControle = async (req, res) => {
       return res.status(404).json({ message: "Control not found." });
 
     // Validation  End/---------------------------------/
-    const result = await prisma.controls.delete({
+    await prisma.controls.delete({
       where: {
         control_id: id,
       },
     });
-    return res.status(200).json(result);
+    return res.status(200).json({ result: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

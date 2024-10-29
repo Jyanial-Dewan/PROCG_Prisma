@@ -3,7 +3,12 @@ const currentDate = new Date().toLocaleString();
 
 exports.getDefUsers = async (req, res) => {
   try {
-    const result = await prisma.def_users.findMany();
+    const result = await prisma.def_users.findMany({
+      //sorting desc
+      orderBy: {
+        user_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -126,12 +131,12 @@ exports.deleteDefUser = async (req, res) => {
       return res.status(404).json({ message: "User not found." });
 
     // Validation  End/---------------------------------/
-    const result = await prisma.def_users.delete({
+    await prisma.def_users.delete({
       where: {
         user_id: user_id,
       },
     });
-    return res.status(200).json({ result });
+    return res.status(200).json({ result: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

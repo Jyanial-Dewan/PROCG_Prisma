@@ -1,7 +1,12 @@
 const prisma = require("../DB/db.config");
 exports.getManageGlobalConditions = async (req, res) => {
   try {
-    const result = await prisma.manage_global_conditions.findMany();
+    const result = await prisma.manage_global_conditions.findMany({
+      //sorting desc
+      orderBy: {
+        manage_global_condition_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -139,12 +144,12 @@ exports.deleteManageGlobalCondition = async (req, res) => {
         .json({ message: "ManageGlobalCondition data not found." });
 
     // Validation  End/---------------------------------/
-    const result = await prisma.manage_global_conditions.delete({
+    await prisma.manage_global_conditions.delete({
       where: {
         manage_global_condition_id: id,
       },
     });
-    return res.status(200).json(result);
+    return res.status(200).json({ result: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

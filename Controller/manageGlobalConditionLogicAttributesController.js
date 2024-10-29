@@ -2,7 +2,12 @@ const prisma = require("../DB/db.config");
 exports.getManageGlobalConditionLogicArrtibutes = async (req, res) => {
   try {
     const result =
-      await prisma.manage_global_condition_logic_attributes.findMany();
+      await prisma.manage_global_condition_logic_attributes.findMany({
+        //sorting desc
+        orderBy: {
+          manage_global_condition_logic_id: "desc",
+        },
+      });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });

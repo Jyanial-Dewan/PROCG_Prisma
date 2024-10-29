@@ -1,7 +1,12 @@
 const prisma = require("../DB/db.config");
 exports.getManageAccessModels = async (req, res) => {
   try {
-    const result = await prisma.manage_access_models.findMany();
+    const result = await prisma.manage_access_models.findMany({
+      //sorting desc
+      orderBy: {
+        manage_access_model_id: "desc",
+      },
+    });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -147,12 +152,12 @@ exports.deleteManageAccessModel = async (req, res) => {
         .json({ message: "Manage Access Model not found." });
 
     // Validation  End/---------------------------------/
-    const result = await prisma.manage_access_models.delete({
+    await prisma.manage_access_models.delete({
       where: {
         manage_access_model_id: id,
       },
     });
-    return res.status(200).json(result);
+    return res.status(200).json({ result: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
