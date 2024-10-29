@@ -1,8 +1,9 @@
-const Router = require('express');
-const combinedUrserController = require('../Controller/combinedUserController');
+const Router = require("express");
+const combinedUrserController = require("../Controller/combinedUserController");
 
 const router = Router();
 
 router.post("/", combinedUrserController.createCombinedUser);
+router.get("/", combinedUrserController.getCombinedUsers);
 
 module.exports = router;
