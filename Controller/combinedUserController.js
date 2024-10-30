@@ -119,20 +119,20 @@ exports.getCombinedUsers = async (req, res) => {
     startNumber = pageInto * limitNumber;
   }
   try {
-    const users = await prisma.def_users.findMany();
+    const users = await prisma.def_users.findMany({
+      orderBy: {
+        user_id: "desc",
+      },
+    });
 
     const persons = await prisma.def_persons.findMany();
 
-    const credentials = await prisma.def_user_credentials.findMany();
-
     const combinedUsers = users.map((user) => {
       const person = persons.find((p) => p.user_id === user.user_id);
-      const credential = credentials.find((c) => c.user_id === user.user_id);
 
       return {
         ...user,
         ...person,
-        ...credential,
       };
     });
 
