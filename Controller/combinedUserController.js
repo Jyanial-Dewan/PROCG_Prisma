@@ -109,6 +109,15 @@ exports.createCombinedUser = async (req, res) => {
 };
 
 exports.getCombinedUsers = async (req, res) => {
+  const { page, limit } = req.params;
+  const pageNumber = parseInt(page);
+  const limitNumber = parseInt(limit);
+  let startNumber = 0;
+  const endNumber = pageNumber * limitNumber;
+  if (pageNumber > 1) {
+    const pageInto = pageNumber - 1;
+    startNumber = pageInto * limitNumber;
+  }
   try {
     const users = await prisma.def_users.findMany();
 
@@ -127,7 +136,9 @@ exports.getCombinedUsers = async (req, res) => {
       };
     });
 
-    return res.status(200).json(combinedUsers);
+    const response = combinedUsers.slice(startNumber, endNumber);
+
+    return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
