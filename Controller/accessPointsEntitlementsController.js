@@ -259,6 +259,7 @@ exports.filterAccessPointsById = async (req, res) => {
   const stringArray = idsParam.split(",");
   const ids = stringArray.map(Number);
   try {
+    const datasources = await prisma.data_sources.findMany();
     const accessPoints = await prisma.access_points_elements.findMany({
       where: {
         access_point_id: {
@@ -271,7 +272,18 @@ exports.filterAccessPointsById = async (req, res) => {
         access_point_id: "desc",
       },
     });
-    res.status(200).json(accessPoints);
+    //merge accessPoints and datasources
+    const combainedData = accessPoints.map((accessPoint) => {
+      const dataSource = datasources.find(
+        (dataSource) => dataSource.data_source_id === accessPoint.data_source_id
+      );
+      return {
+        ...accessPoint,
+        dataSource,
+      };
+    });
+    // console.log(combainedData, "combainedData");
+    res.status(200).json(combainedData);
   } catch (error) {
     console.error(error);
     res
