@@ -1,5 +1,10 @@
 const prisma = require("../DB/db.config");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+const { default: axios } = require("axios");
+dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const hashPassword = (password) => {
   return new Promise((resolve, reject) => {
@@ -139,6 +144,22 @@ exports.getCombinedUsers = async (req, res) => {
     const response = combinedUsers.slice(startNumber, endNumber);
 
     return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getFlaskCombinedUser = async (req, res) => {
+  const response = await axios.get("http://129.146.53.68:5000/users");
+  return res.status(200).json(response.data);
+};
+
+exports.createFlaskCombinedUser = async (req, res) => {
+  const data = req.body;
+
+  try {
+    await axios.post("http://129.146.53.68:5000/users", data);
+    return res.status(201).json({ message: "Record inserted successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
