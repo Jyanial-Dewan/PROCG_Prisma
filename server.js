@@ -33,32 +33,11 @@ app.use(require("./Routes/index"));
 
 //Socket
 let users = {};
+const url = process.env.VALKEY_URI;
 
-const pub = new Redis({
-  host: process.env.VALKEY_HOST,
-  port: 21896,
-  username: process.env.VALKEY_USERNAME,
-  password: process.env.VALKEY_PASSWORD,
-  maxRetriesPerRequest: null, // Disable retry limit
-  connectTimeout: 10000, // Optional: increase timeout for connections
-  retryStrategy(times) {
-    const delay = Math.min(times * 100, 3000); // Backoff strategy, increasing delay
-    return delay;
-  },
-});
+const pub = new Redis(url);
 
-const sub = new Redis({
-  host: process.env.VALKEY_HOST,
-  port: 21896,
-  username: process.env.VALKEY_USERNAME,
-  password: process.env.VALKEY_PASSWORD,
-  maxRetriesPerRequest: null, // Disable retry limit
-  connectTimeout: 10000, // Optional: increase timeout for connections
-  retryStrategy(times) {
-    const delay = Math.min(times * 100, 3000); // Backoff strategy, increasing delay
-    return delay;
-  },
-});
+const sub = new Redis(url);
 
 io.use((socket, next) => {
   const key = socket.handshake.query.key;
