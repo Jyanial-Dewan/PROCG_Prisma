@@ -261,3 +261,20 @@ model access_entitlement_elements {
 
   @@id([entitlement_id, access_point_id])
 }
+
+model def_users_v {
+  user_id         Int     @id
+  user_name       String?
+  first_name      String?
+  middle_name     String?
+  last_name       String?
+  email_addresses Json?
+  job_title       String?
+  created_by      Int?
+  created_on      String?
+  last_updated_by Int?
+  last_updated_on String?
+  tenant_id       Int?
+
+  @@map("def_users_v")
+}

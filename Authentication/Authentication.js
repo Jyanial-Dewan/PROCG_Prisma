@@ -79,3 +79,18 @@ exports.login = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+// access token verify
+
+exports.verifyToken = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+};
