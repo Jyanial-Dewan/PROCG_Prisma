@@ -149,8 +149,70 @@ exports.getCombinedUsers = async (req, res) => {
   }
 };
 
+exports.getUsers = async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  const offset = (page - 1) * limit;
+  try {
+    const users = await prisma.def_users_v.findMany({
+      take: limit,
+      skip: offset,
+      orderBy: {
+        user_id: "desc",
+      },
+    });
+
+    return res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+exports.updateUser = async (req, res) => {
+  console.log(req.body, "data 175");
+  try {
+    const data = req.body;
+    const id = Number(req.params.id);
+    // Validation  START/---------------------------------/
+    const findDefUserId = await prisma.def_users.findUnique({
+      where: {
+        user_id: id,
+      },
+    });
+    if (!findDefUserId)
+      return res.status(404).json({ message: "User Id not found." });
+
+    // Validation  End/---------------------------------/
+    await prisma.def_users.update({
+      where: {
+        user_id: id,
+      },
+      data: {
+        user_name: data.user_name,
+        email_addresses: data.email_addresses,
+      },
+    });
+    await prisma.def_persons.update({
+      where: {
+        user_id: id,
+      },
+      data: {
+        first_name: data.first_name,
+        middle_name: data.middle_name,
+        last_name: data.last_name,
+        job_title: data.job_title,
+      },
+    });
+    return res.status(200).json({ result: "Updated successfully ." });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+//Flask API Wrapper
+
 exports.getFlaskCombinedUser = async (req, res) => {
-  const response = await axios.get("http://129.146.53.68:5000/users");
+  const response = await axios.get("https://procg.viscorp.app/api/v1/users");
   return res.status(200).json(response.data);
 };
 
@@ -158,7 +220,7 @@ exports.createFlaskCombinedUser = async (req, res) => {
   const data = req.body;
 
   try {
-    await axios.post("http://129.146.53.68:5000/users", data);
+    await axios.post("https://procg.viscorp.app/api/v1/users", data);
     return res.status(201).json({ message: "Record inserted successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
