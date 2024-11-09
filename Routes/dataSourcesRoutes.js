@@ -4,7 +4,7 @@ const dataSourcesController = require("../Controller/dataSourcesController");
 const router = Router();
 
 router.get("/", dataSourcesController.getDataSources);
-router.get("/p", dataSourcesController.perPageDataSources);
+router.get("/:page/:limit", dataSourcesController.getPerPageDataSources);
 router.get("/:id", dataSourcesController.getUniqueDataSource);
 router.post("/", dataSourcesController.createDataSource);
 router.delete("/:id", dataSourcesController.deleteDataSource);

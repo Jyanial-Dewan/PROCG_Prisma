@@ -5,8 +5,8 @@ const router = Router();
 
 router.get("/", manageAccessEntitlementsController.getManageAccessEntitlements);
 router.get(
-  "/p",
-  manageAccessEntitlementsController.perPageManageAccessEntitlement
+  "/:page/:limit",
+  manageAccessEntitlementsController.getPerPageManageAccessEntitlement
 );
 router.get(
   "/:id",

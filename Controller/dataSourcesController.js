@@ -169,9 +169,9 @@ exports.deleteDataSource = async (req, res) => {
   }
 };
 // perPageDataSources Data
-exports.perPageDataSources = async (req, res) => {
-  const page = parseInt(req.query.page);
-  const limit = parseInt(req.query.limit);
+exports.getPerPageDataSources = async (req, res) => {
+  const page = Number(req.params.page);
+  const limit = Number(req.params.limit);
   const offset = (page - 1) * limit;
   try {
     const results = await prisma.data_sources.findMany({

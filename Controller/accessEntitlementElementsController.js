@@ -65,9 +65,9 @@ exports.deleteAccessEntitlementElement = async (req, res) => {
   }
 };
 // perPageAccessEntitlementElement Data
-exports.perPageAccessEntitlementElement = async (req, res) => {
-  const page = parseInt(req.query.page);
-  const limit = parseInt(req.query.limit);
+exports.getPerPageAccessEntitlementElement = async (req, res) => {
+  const page = Number(req.params.page);
+  const limit = Number(req.params.limit);
   const offset = (page - 1) * limit;
   try {
     const results = await prisma.access_entitlement_elements.findMany({

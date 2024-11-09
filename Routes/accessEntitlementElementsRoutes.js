@@ -8,8 +8,8 @@ router.get(
   accessEntitlementElementsController.getAccessEntitlementElement
 );
 router.get(
-  "/p",
-  accessEntitlementElementsController.perPageAccessEntitlementElement
+  "/:page/:limit",
+  accessEntitlementElementsController.getPerPageAccessEntitlementElement
 );
 router.get(
   "/:id",
