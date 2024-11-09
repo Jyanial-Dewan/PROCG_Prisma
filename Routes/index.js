@@ -20,38 +20,32 @@ const Router = require("express");
 
 const routes = Router();
 
-routes.use("/api/v2/persons", defPersonsRoutes);
-routes.use("/api/v2/users", defUsersRoutes);
-routes.use("/api/v2/tenants", defTenantsRoutes);
-routes.use("/api/v2/user-credentials", defUserCredentialsRoutes);
-routes.use("/api/v2/login", authentication);
-routes.use("/api/v2/messages", messagesRoutes);
-routes.use("/api/v2/data-sources", dataSourcesRoutes);
+routes.use("/persons", defPersonsRoutes);
+routes.use("/users", defUsersRoutes);
+routes.use("/tenants", defTenantsRoutes);
+routes.use("/user-credentials", defUserCredentialsRoutes);
+routes.use("/login", authentication);
+routes.use("/messages", messagesRoutes);
+routes.use("/data-sources", dataSourcesRoutes);
+routes.use("/manage-access-entitlements", manageAccessEntitlementsRoutes);
+routes.use("/access-entitlement-elements", accessEntitlementElementsRoutes);
+routes.use("/access-points-element", accessPointsEntitlementsRoutes);
+routes.use("/combined-user", combinedUserRoutes);
+routes.use("/manage-global-conditions", manageGlobalConditionsRoutes);
 routes.use(
-  "/api/v2/manage-access-entitlements",
-  manageAccessEntitlementsRoutes
-);
-routes.use(
-  "/api/v2/access-entitlement-elements",
-  accessEntitlementElementsRoutes
-);
-routes.use("/api/v2/access-points-element", accessPointsEntitlementsRoutes);
-routes.use("/api/v2/combined-user", combinedUserRoutes);
-routes.use("/api/v2/manage-global-conditions", manageGlobalConditionsRoutes);
-routes.use(
-  "/api/v2/manage-global-condition-logics",
+  "/manage-global-condition-logics",
   manageGlobalConditionsLogicsRoutes
 );
 routes.use(
-  "/api/v2/manage-global-condition-logic-attributes",
+  "/manage-global-condition-logic-attributes",
   manageGlobalConditionsLogicAttributesRoutes
 );
-routes.use("/api/v2/manage-access-models", manageAccessModelsRoutes);
-routes.use("/api/v2/manage-access-model-logics", manageAccessModelLogicsRoutes);
+routes.use("/manage-access-models", manageAccessModelsRoutes);
+routes.use("/manage-access-model-logics", manageAccessModelLogicsRoutes);
 routes.use(
-  "/api/v2/manage-access-model-logic-attributes",
+  "/manage-access-model-logic-attributes",
   manageAccessModelLogicAttributesRoutes
 );
-routes.use("/api/v2/controls", controlesRoutes);
+routes.use("/controls", controlesRoutes);
 
 module.exports = routes;

@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const { default: axios } = require("axios");
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
+const flash_api_url = process.env.FLASK_API_URL;
 
 const hashPassword = (password) => {
   return new Promise((resolve, reject) => {
@@ -251,7 +252,7 @@ exports.updateUser = async (req, res) => {
 //Flask API Wrapper
 
 exports.getFlaskCombinedUser = async (req, res) => {
-  const response = await axios.get("https://procg.viscorp.app/api/v1/users");
+  const response = await axios.get(`${flash_api_url}/users`);
   return res.status(200).json(response.data);
 };
 
@@ -259,7 +260,7 @@ exports.createFlaskCombinedUser = async (req, res) => {
   const data = req.body;
 
   try {
-    await axios.post("https://procg.viscorp.app/api/v1/users", data);
+    await axios.post(`${flash_api_url}/users`, data);
     return res.status(201).json({ message: "Record inserted successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
