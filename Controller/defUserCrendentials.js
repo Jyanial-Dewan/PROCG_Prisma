@@ -2,6 +2,7 @@ const prisma = require("../DB/db.config");
 const crypto = require("crypto");
 const { default: axios } = require("axios");
 const { url } = require("inspector");
+const flash_api_url = process.env.FLASK_API_URL;
 //------------Hash Password Start
 
 const hashPassword = (password) => {
@@ -125,7 +126,7 @@ exports.resetPassword = async (req, res) => {
   try {
     if (findDefUserId) {
       const result = await axios.put(
-        "https://procg.viscorp.app/api/v1/reset_user_password",
+        `${flash_api_url}/reset_user_password`,
         data
       );
       if (result.status === 200) {
