@@ -1,5 +1,7 @@
 const prisma = require("../DB/db.config");
 const crypto = require("crypto");
+const { default: axios } = require("axios");
+const { url } = require("inspector");
 //------------Hash Password Start
 
 const hashPassword = (password) => {
@@ -106,6 +108,34 @@ exports.updateDefUserCredential = async (req, res) => {
       return res.status(404).json({ message: "User Credential Id not found." });
     }
   } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+//reset password
+exports.resetPassword = async (req, res) => {
+  const data = req.body;
+  console.log(data, "data def user credential");
+  // verify user
+  const findDefUserId = await prisma.def_user_credentials.findUnique({
+    where: {
+      user_id: Number(data.user_id),
+    },
+  });
+  try {
+    if (findDefUserId) {
+      const result = await axios.put(
+        "https://procg.viscorp.app/api/v1/reset_user_password",
+        data
+      );
+      if (result.status === 200) {
+        return res.status(200).json({ message: "Password reset successful" });
+      }
+    }
+  } catch (error) {
+    if (error.status === 401) {
+      return res.status(401).json({ message: "Invalid old password" });
+    }
     return res.status(500).json({ error: error.message });
   }
 };

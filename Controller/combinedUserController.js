@@ -149,9 +149,39 @@ exports.getCombinedUsers = async (req, res) => {
   }
 };
 
-exports.getUsers = async (req, res) => {
-  const page = parseInt(req.query.page);
-  const limit = parseInt(req.query.limit);
+exports.getUsersView = async (req, res) => {
+  try {
+    const users = await prisma.def_users_v.findMany({
+      orderBy: {
+        user_id: "desc",
+      },
+    });
+
+    return res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+exports.getUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const users = await prisma.def_users_v.findUnique({
+      where: {
+        user_id: Number(id),
+      },
+    });
+
+    return res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+// combined users get with page and limit
+exports.getUsersWithPageAndLimit = async (req, res) => {
+  const page = Number(req.params.page);
+  const limit = Number(req.params.limit);
   const offset = (page - 1) * limit;
   try {
     const users = await prisma.def_users_v.findMany({
@@ -169,7 +199,6 @@ exports.getUsers = async (req, res) => {
   }
 };
 exports.updateUser = async (req, res) => {
-  console.log(req.body, "data 175");
   try {
     const data = req.body;
     const id = Number(req.params.id);
@@ -203,6 +232,16 @@ exports.updateUser = async (req, res) => {
         job_title: data.job_title,
       },
     });
+    if (data.password) {
+      const res = await prisma.def_user_credentials.update({
+        where: {
+          user_id: id,
+        },
+        data: {
+          password: await hashPassword(data.password),
+        },
+      });
+    }
     return res.status(200).json({ result: "Updated successfully ." });
   } catch (error) {
     return res.status(500).json({ error: error.message });
