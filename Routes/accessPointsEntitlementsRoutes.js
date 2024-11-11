@@ -8,7 +8,14 @@ router.get(
   "/:page/:limit",
   accessPointsEntitlementController.getPerPageAccessPoints
 );
-router.get("/ids", accessPointsEntitlementController.filterAccessPointsById);
+router.get(
+  "/:ids/:page/:limit",
+  accessPointsEntitlementController.filterAccessPointsById
+);
+router.get(
+  "/:ids",
+  accessPointsEntitlementController.filterAccessPointsForDelete
+);
 router.get(
   "/:id",
   accessPointsEntitlementController.getUniqueAccessPointsEntitlement

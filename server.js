@@ -21,8 +21,6 @@ const allowedOrigins = [
   "http://129.146.53.68:3000",
   "http://129.146.53.68:8000",
   "https://procg.viscorp.app",
-  "http://192.168.0.106:3000",
-  "http://192.168.0.106:8000",
 ];
 const options = {
   origin: allowedOrigins,
