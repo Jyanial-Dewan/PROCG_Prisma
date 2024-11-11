@@ -251,13 +251,14 @@ exports.getPerPageAccessPoints = async (req, res) => {
   }
 };
 exports.filterAccessPointsById = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 5;
-  const offset = (page - 1) * limit;
-
-  const idsParam = req.query.ids;
+  const idsParam = req.params.ids; // array of ids
   const stringArray = idsParam.split(",");
   const ids = stringArray.map(Number);
+
+  const page = parseInt(req.params.page) || 1;
+  const limit = parseInt(req.params.limit) || 5;
+  const offset = (page - 1) * limit;
+
   try {
     const datasources = await prisma.data_sources.findMany();
     const accessPoints = await prisma.access_points_elements.findMany({
@@ -268,6 +269,41 @@ exports.filterAccessPointsById = async (req, res) => {
       },
       take: limit,
       skip: offset,
+      orderBy: {
+        access_point_id: "desc",
+      },
+    });
+    //merge accessPoints and datasources
+    const combainedData = accessPoints.map((accessPoint) => {
+      const dataSource = datasources.find(
+        (dataSource) => dataSource.data_source_id === accessPoint.data_source_id
+      );
+      return {
+        ...accessPoint,
+        dataSource,
+      };
+    });
+    // console.log(combainedData, "combainedData");
+    res.status(200).json(combainedData);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while querying the database." });
+  }
+};
+exports.filterAccessPointsForDelete = async (req, res) => {
+  const idsParam = req.params.ids; // array of ids
+  const stringArray = idsParam.split(",");
+  const ids = stringArray.map(Number);
+  try {
+    const datasources = await prisma.data_sources.findMany();
+    const accessPoints = await prisma.access_points_elements.findMany({
+      where: {
+        access_point_id: {
+          in: ids,
+        },
+      },
       orderBy: {
         access_point_id: "desc",
       },
