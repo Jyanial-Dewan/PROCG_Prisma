@@ -3,6 +3,8 @@ const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
 const { Redis } = require("ioredis");
+require("dotenv").config();
+
 const app = express();
 
 const PORT = process.env.PORT;
@@ -145,6 +147,9 @@ io.on("connection", (socket) => {
 
   socket.on("read", async ({ id, user }) => {
     io.to(user).emit("sync", id);
+  });
+  socket.on("countSyncSocketMsg", async ({ id, user }) => {
+    io.to(user).emit("removeMsgFromSocketMessages", id);
   });
 
   socket.on("disconnect", () => {

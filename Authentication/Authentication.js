@@ -72,7 +72,7 @@ exports.login = async (req, res) => {
           access_token: token,
         });
       } else {
-        return res.status(408).json({ error: "Invalid credential" });
+        return res.status(401).json({ error: "Invalid credential" });
       }
     }
   } catch (error) {
