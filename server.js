@@ -17,6 +17,7 @@ const io = socketIo(server, {
     methods: ["GET", "POST"],
   },
 });
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
@@ -25,6 +26,7 @@ const allowedOrigins = [
   "http://129.146.53.68:8000",
   "https://procg.viscorp.app",
 ];
+
 const options = {
   origin: allowedOrigins,
 };
@@ -37,7 +39,6 @@ let users = {};
 const url = process.env.VALKEY_URI;
 
 const pub = new Redis(url);
-
 const sub = new Redis(url);
 
 io.use((socket, next) => {
@@ -58,92 +59,26 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on(
-    "sendMessage",
-    async ({
-      id,
-      sender,
-      recivers,
-      subject,
-      body,
-      date,
-      status,
-      parentid,
-      involvedusers,
-      readers,
-    }) => {
-      await pub.publish(
-        "NOTIFICATION-MESSAGES",
-        JSON.stringify({ id, sender, subject, date, parentid, recivers })
-      );
+  socket.on("receiveMessage", async (data) => {
+    await pub.publish("NOTIFICATION-MESSAGES", JSON.stringify(data));
+    // { id, sender, recivers, subject,  body, date,  status, parentid, involvedusers, readers, }
+    sub.on("message", (channel, message) => {
+      if (channel === "NOTIFICATION-MESSAGES") {
+        const newMessage = JSON.parse(message);
+        console.log(newMessage);
+        newMessage.recivers.forEach((reciver) => {
+          io.to(reciver).emit("receivedMessage", newMessage);
+        });
+      }
+    });
+  });
+  socket.on("sendMessage", async (data) => {
+    io.to(data.sender).emit("sentMessage", data);
+  });
 
-      sub.on("message", (channel, message) => {
-        if (channel === "NOTIFICATION-MESSAGES") {
-          const newMessage = JSON.parse(message);
-          console.log(newMessage);
-          newMessage.recivers.forEach((reciver) => {
-            io.to(reciver).emit("receivedMessage", newMessage);
-          });
-        }
-      });
-      // recivers.forEach((reciver) => {
-      //   io.to(reciver).emit("message", {
-      //     id,
-      //     sender,
-      //     recivers,
-      //     subject,
-      //     body,
-      //     date,
-      //     status,
-      //     parentid,
-      //     involvedusers,
-      //     readers,
-      //   });
-      // });
-
-      io.to(sender).emit("sentMessage", {
-        id,
-        sender,
-        recivers,
-        subject,
-        body,
-        date,
-        status,
-        parentid,
-        involvedusers,
-        readers,
-      });
-    }
-  );
-
-  socket.on(
-    "sendDraft",
-    ({
-      id,
-      sender,
-      recivers,
-      subject,
-      body,
-      date,
-      status,
-      parentid,
-      involvedusers,
-      readers,
-    }) => {
-      io.to(sender).emit("draftMessage", {
-        id,
-        sender,
-        recivers,
-        subject,
-        body,
-        date,
-        status,
-        parentid,
-        involvedusers,
-        readers,
-      });
-    }
-  );
+  socket.on("sendDraft", (data) => {
+    io.to(data.sender).emit("draftMessage", data);
+  });
 
   socket.on("read", async ({ id, user }) => {
     io.to(user).emit("sync", id);
@@ -162,3 +97,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(PORT, () => console.log(`Server is running ${PORT}.`));
+
+//id, sender, recivers,  subject,  body, date,   status,  parentid,   involvedusers,  readers,

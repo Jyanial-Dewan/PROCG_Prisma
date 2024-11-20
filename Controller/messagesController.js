@@ -140,6 +140,7 @@ exports.getRecievedMessages = async (req, res) => {
         recivers: {
           array_contains: user,
         },
+        status: "Received",
       },
       orderBy: {
         date: "desc",
@@ -147,8 +148,7 @@ exports.getRecievedMessages = async (req, res) => {
     });
 
     if (result) {
-      const receivedMessages = result.filter((msg) => msg.status === "Sent");
-      const limitedMessages = receivedMessages.slice(startNumber, endNumber);
+      const limitedMessages = result.slice(startNumber, endNumber);
       return res.status(200).json(limitedMessages);
     } else {
       return res.status(404).json({ error: "User not found." });
@@ -166,6 +166,7 @@ exports.getNotificationMessages = async (req, res) => {
         readers: {
           array_contains: user,
         },
+        status: "Received",
       },
       orderBy: {
         date: "desc",
@@ -173,10 +174,7 @@ exports.getNotificationMessages = async (req, res) => {
     });
 
     if (result) {
-      const notificationMessages = result.filter(
-        (msg) => msg.status === "Sent"
-      );
-      return res.status(200).json(notificationMessages);
+      return res.status(200).json(result);
     } else {
       return res.status(404).json({ error: "User not found." });
     }
@@ -199,6 +197,7 @@ exports.getSentMessages = async (req, res) => {
     const result = await prisma.messages.findMany({
       where: {
         sender: user,
+        status: "Sent",
       },
       orderBy: {
         date: "desc",
@@ -206,8 +205,7 @@ exports.getSentMessages = async (req, res) => {
     });
 
     if (result) {
-      const sentMessages = result.filter((msg) => msg.status === "Sent");
-      const limitedMessages = sentMessages.slice(startNumber, endNumber);
+      const limitedMessages = result.slice(startNumber, endNumber);
       return res.status(200).json(limitedMessages);
     } else {
       return res.status(404).json({ error: "User not found." });
@@ -231,6 +229,7 @@ exports.getDraftMessages = async (req, res) => {
     const result = await prisma.messages.findMany({
       where: {
         sender: user,
+        status: "Draft",
       },
       orderBy: {
         date: "desc",
@@ -238,8 +237,7 @@ exports.getDraftMessages = async (req, res) => {
     });
 
     if (result) {
-      const draftMessages = result.filter((msg) => msg.status === "Draft");
-      const limitedMessages = draftMessages.slice(startNumber, endNumber);
+      const limitedMessages = result.slice(startNumber, endNumber);
       return res.status(200).json(limitedMessages);
     } else {
       return res.status(404).json({ error: "User not found." });
@@ -287,6 +285,7 @@ exports.getTotalRecievedMessages = async (req, res) => {
         recivers: {
           array_contains: user,
         },
+        status: "Received",
       },
       orderBy: {
         date: "desc",
@@ -294,9 +293,7 @@ exports.getTotalRecievedMessages = async (req, res) => {
     });
 
     if (result) {
-      const receivedMessages = result.filter((msg) => msg.status === "Sent");
-
-      return res.status(200).json({ total: receivedMessages.length });
+      return res.status(200).json({ total: result.length });
     } else {
       return res.status(404).json({ error: "User not found." });
     }
@@ -311,6 +308,7 @@ exports.getTotalSentMessages = async (req, res) => {
     const result = await prisma.messages.findMany({
       where: {
         sender: user,
+        status: "Sent",
       },
       orderBy: {
         date: "desc",
@@ -318,8 +316,7 @@ exports.getTotalSentMessages = async (req, res) => {
     });
 
     if (result) {
-      const sentMessages = result.filter((msg) => msg.status === "Sent");
-      return res.status(200).json({ total: sentMessages.length });
+      return res.status(200).json({ total: result.length });
     } else {
       return res.status(404).json({ error: "User not found." });
     }
@@ -334,6 +331,7 @@ exports.getTotalDraftMessages = async (req, res) => {
     const result = await prisma.messages.findMany({
       where: {
         sender: user,
+        status: "Draft",
       },
       orderBy: {
         date: "desc",
@@ -341,8 +339,7 @@ exports.getTotalDraftMessages = async (req, res) => {
     });
 
     if (result) {
-      const draftMessages = result.filter((msg) => msg.status === "Draft");
-      return res.status(200).json({ total: draftMessages.length });
+      return res.status(200).json({ total: result.length });
     } else {
       return res.status(404).json({ error: "User not found." });
     }
