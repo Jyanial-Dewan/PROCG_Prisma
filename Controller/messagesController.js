@@ -142,6 +142,9 @@ exports.getRecievedMessages = async (req, res) => {
           array_contains: user,
         },
         status: "Sent",
+        holders: {
+          array_contains: user,
+        },
       },
       orderBy: {
         date: "desc",
