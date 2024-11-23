@@ -138,9 +138,6 @@ exports.getRecievedMessages = async (req, res) => {
     }
     const result = await prisma.messages.findMany({
       where: {
-        recivers: {
-          array_contains: user,
-        },
         status: "Sent",
         holders: {
           array_contains: user,
