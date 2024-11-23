@@ -138,13 +138,9 @@ exports.getRecievedMessages = async (req, res) => {
     }
     const result = await prisma.messages.findMany({
       where: {
-        recivers: {
-          array_contains: user,
-        },
+        recivers: { path: "$", array_contains: user },
         status: "Sent",
-        holders: {
-          array_contains: user,
-        },
+        holders: { path: "$", array_contains: user },
       },
       orderBy: {
         date: "desc",
@@ -167,13 +163,9 @@ exports.getNotificationMessages = async (req, res) => {
     const user = req.params.user;
     const result = await prisma.messages.findMany({
       where: {
-        readers: {
-          array_contains: user,
-        },
+        readers: { path: "$", array_contains: user },
         status: "Sent",
-        holders: {
-          array_contains: user,
-        },
+        holders: { path: "$", array_contains: user },
       },
       orderBy: {
         date: "desc",
@@ -205,9 +197,7 @@ exports.getSentMessages = async (req, res) => {
       where: {
         sender: user,
         status: "Sent",
-        holders: {
-          array_contains: user,
-        },
+        holders: { path: "$", array_contains: user },
       },
       orderBy: {
         date: "desc",
@@ -240,9 +230,7 @@ exports.getDraftMessages = async (req, res) => {
       where: {
         sender: user,
         status: "Draft",
-        holders: {
-          array_contains: user,
-        },
+        holders: { path: "$", array_contains: user },
       },
       orderBy: {
         date: "desc",
@@ -272,9 +260,7 @@ exports.getRecycleBinMessages = async (req, res) => {
     }
     const result = await prisma.messages.findMany({
       where: {
-        recyclebin: {
-          array_contains: user,
-        },
+        recyclebin: { path: "$", array_contains: user },
       },
       orderBy: {
         date: "desc",
@@ -328,9 +314,7 @@ exports.setToRecycleBin = async (req, res) => {
     const messagesToUpdate = await prisma.messages.findUnique({
       where: {
         id: id,
-        holders: {
-          array_contains: user,
-        },
+        holders: { path: "$", array_contains: user },
       },
     });
     if (messagesToUpdate.holders.includes(user)) {
@@ -375,9 +359,7 @@ exports.removeUserFromRecycleBin = async (req, res) => {
     const uniqueDeleteMsg = await prisma.messages.findUnique({
       where: {
         id: id,
-        recyclebin: {
-          array_contains: user,
-        },
+        recyclebin: { path: "$", array_contains: user },
       },
     });
 
@@ -406,17 +388,13 @@ exports.getTotalRecievedMessages = async (req, res) => {
     const user = req.params.user;
     const result = await prisma.messages.findMany({
       where: {
-        recivers: {
-          array_contains: user,
-        },
+        recivers: { path: "$", array_contains: user },
         status: "Sent",
         holders: {
           array_contains: user,
         },
       },
-      orderBy: {
-        date: "desc",
-      },
+      orderBy: { path: "$", date: "desc" },
     });
 
     if (result) {
@@ -436,9 +414,7 @@ exports.getTotalSentMessages = async (req, res) => {
       where: {
         sender: user,
         status: "Sent",
-        holders: {
-          array_contains: user,
-        },
+        holders: { path: "$", array_contains: user },
       },
       orderBy: {
         date: "desc",
@@ -462,9 +438,7 @@ exports.getTotalDraftMessages = async (req, res) => {
       where: {
         sender: user,
         status: "Draft",
-        holders: {
-          array_contains: user,
-        },
+        holders: { path: "$", array_contains: user },
       },
       orderBy: {
         date: "desc",
@@ -485,9 +459,7 @@ exports.getTotalRecycleBinMessages = async (req, res) => {
     const user = req.params.user;
     const result = await prisma.messages.findMany({
       where: {
-        recyclebin: {
-          array_contains: user,
-        },
+        recyclebin: { path: "$", array_contains: user },
       },
       orderBy: {
         date: "desc",
