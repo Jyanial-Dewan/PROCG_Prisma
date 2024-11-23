@@ -137,6 +137,8 @@ model messages {
   parentid      String?
   involvedusers Json?
   readers       Json?
+  holders       Json?
+  recyclebin    Json?
 }
 
 model manage_access_entitlements {

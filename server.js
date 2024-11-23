@@ -59,22 +59,26 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("receiveMessage", async (data) => {
+  socket.on("sendMessage", async (data) => {
     await pub.publish("NOTIFICATION-MESSAGES", JSON.stringify(data));
     // { id, sender, recivers, subject,  body, date,  status, parentid, involvedusers, readers, }
+    console.log("sendMessage2");
     sub.on("message", (channel, message) => {
       if (channel === "NOTIFICATION-MESSAGES") {
         const newMessage = JSON.parse(message);
-        console.log(newMessage);
+        console.log(newMessage, "message 3");
         newMessage.recivers.forEach((reciver) => {
+          console.log("first message 4");
           io.to(reciver).emit("receivedMessage", newMessage);
         });
       }
     });
+    io.to(data.sender).emit("sentMessage", JSON.stringify(data));
   });
-  socket.on("sendMessage", async (data) => {
-    io.to(data.sender).emit("sentMessage", data);
-  });
+
+  // socket.on("sendMessage", async (data) => {
+  //   io.to(data.sender).emit("sentMessage", data);
+  // });
 
   socket.on("sendDraft", (data) => {
     io.to(data.sender).emit("draftMessage", data);
