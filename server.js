@@ -18,17 +18,8 @@ const io = socketIo(server, {
   },
 });
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "http://129.146.53.68:5000",
-  "http://129.146.53.68:3000",
-  "http://129.146.53.68:8000",
-  "https://procg.viscorp.app",
-];
-
 const options = {
-  origin: allowedOrigins,
+  origin: JSON.parse(process.env.ALLOWED_ORIGINS),
 };
 app.use(express.json());
 app.use(cors(options));
@@ -62,7 +53,7 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", async (data) => {
     await pub.publish("NOTIFICATION-MESSAGES", JSON.stringify(data));
     // { id, sender, recivers, subject,  body, date,  status, parentid, involvedusers, readers, }
-    console.log("sendMessage2");
+    console.log("sendMessage2 2222222222", data);
     sub.on("message", (channel, message) => {
       if (channel === "NOTIFICATION-MESSAGES") {
         const newMessage = JSON.parse(message);
@@ -73,7 +64,7 @@ io.on("connection", (socket) => {
         });
       }
     });
-    io.to(data.sender).emit("sentMessage", JSON.stringify(data));
+    io.to(data.sender).emit("sentMessage", data);
   });
 
   // socket.on("sendMessage", async (data) => {
