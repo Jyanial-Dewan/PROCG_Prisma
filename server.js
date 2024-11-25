@@ -62,6 +62,7 @@ io.on("connection", (socket) => {
       }
     });
     io.to(data.sender).emit("sentMessage", data);
+    console.log(data);
   });
 
   // socket.on("sendMessage", async (data) => {
