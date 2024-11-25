@@ -100,10 +100,12 @@ exports.updateMessage = async (req, res) => {
         parentid: message_data.parentid,
         involvedusers: message_data.involvedusers,
         readers: message_data.readers,
+        holders: message_data.holders,
+        recyclebin: message_data.recyclebin,
       },
     });
     if (result) {
-      return res.status(201).json({ result });
+      return res.status(200).json({ result });
     }
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -316,7 +318,7 @@ exports.updateReaders = async (req, res) => {
       });
     }
 
-    res.json({ message: "Readers field updated successfully" });
+    res.status(200).json({ message: "Readers field updated successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
