@@ -50,33 +50,60 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("sendMessage", async (data) => {
-    await pub.publish("NOTIFICATION-MESSAGES", JSON.stringify(data));
-    // { id, sender, recivers, subject,  body, date,  status, parentid, involvedusers, readers, }
-    sub.on("message", (channel, message) => {
-      if (channel === "NOTIFICATION-MESSAGES") {
-        const newMessage = JSON.parse(message);
-        newMessage.recivers.forEach((reciver) => {
-          io.to(reciver).emit("receivedMessage", newMessage);
-        });
-      }
-    });
-    io.to(data.sender).emit("sentMessage", data);
-    console.log(data);
-  });
-
-  // socket.on("sendMessage", async (data) => {
-  //   io.to(data.sender).emit("sentMessage", data);
-  // });
+  socket.on(
+    "sendMessage",
+    async ({
+      id,
+      sender,
+      recivers,
+      subject,
+      body,
+      date,
+      status,
+      parentid,
+      involvedusers,
+      readers,
+    }) => {
+      await pub.publish(
+        "NOTIFICATION-MESSAGES",
+        JSON.stringify({ id, sender, subject, date, parentid, recivers })
+      );
+      sub.on("message", (channel, message) => {
+        if (channel === "NOTIFICATION-MESSAGES") {
+          const newMessage = JSON.parse(message);
+          newMessage.recivers.forEach((reciver) => {
+            io.to(reciver).emit("receivedMessage", newMessage);
+          });
+        }
+      });
+      io.to(sender).emit("sentMessage", {
+        id,
+        sender,
+        recivers,
+        subject,
+        body,
+        date,
+        status,
+        parentid,
+        involvedusers,
+        readers,
+      });
+    }
+  );
 
   socket.on("sendDraft", (data) => {
     io.to(data.sender).emit("draftMessage", data);
   });
 
+  socket.on("draftMsgId", ({ id, user }) => {
+    io.to(user).emit("draftMessageId", id);
+  });
+
   socket.on("read", async ({ id, user }) => {
     io.to(user).emit("sync", id);
   });
-  socket.on("countSyncSocketMsg", async ({ id, user }) => {
+
+  socket.on("countSyncSocketMsg", ({ id, user }) => {
     io.to(user).emit("removeMsgFromSocketMessages", id);
   });
 
