@@ -32,6 +32,16 @@ const url = process.env.VALKEY_URI;
 const pub = new Redis(url);
 const sub = new Redis(url);
 
+sub.subscribe("NOTIFICATION-MESSAGES");
+sub.on("message", (channel, message) => {
+  if (channel === "NOTIFICATION-MESSAGES") {
+    const newMessage = JSON.parse(message);
+    newMessage.recivers.forEach((reciver) => {
+      io.to(reciver).emit("receivedMessage", newMessage);
+    });
+  }
+});
+
 io.use((socket, next) => {
   const key = socket.handshake.query.key;
 
@@ -44,7 +54,6 @@ io.use((socket, next) => {
       users[key] = [];
     }
     users[key].push(socket.id);
-    sub.subscribe("NOTIFICATION-MESSAGES");
     next();
   }
 });
@@ -63,19 +72,14 @@ io.on("connection", (socket) => {
       parentid,
       involvedusers,
       readers,
+      holders,
+      recyclebin,
     }) => {
       await pub.publish(
         "NOTIFICATION-MESSAGES",
         JSON.stringify({ id, sender, subject, date, parentid, recivers })
       );
-      sub.on("message", (channel, message) => {
-        if (channel === "NOTIFICATION-MESSAGES") {
-          const newMessage = JSON.parse(message);
-          newMessage.recivers.forEach((reciver) => {
-            io.to(reciver).emit("receivedMessage", newMessage);
-          });
-        }
-      });
+
       io.to(sender).emit("sentMessage", {
         id,
         sender,
@@ -87,6 +91,8 @@ io.on("connection", (socket) => {
         parentid,
         involvedusers,
         readers,
+        holders,
+        recyclebin,
       });
     }
   );
@@ -108,10 +114,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-    // Remove user from the room tracking (optional for simplicity)
-    for (const room in users) {
-      users[room] = users[room].filter((id) => id !== socket.id);
+    console.log("user disconnected", socket.id);
+    for (const key in users) {
+      users[key] = users[key].filter((id) => id !== socket.id);
+      if (users[key].length === 0) {
+        delete users[key];
+      }
     }
   });
 });
