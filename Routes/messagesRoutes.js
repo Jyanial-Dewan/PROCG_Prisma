@@ -5,7 +5,7 @@ const router = Router();
 
 router.get("/", messageController.message);
 router.get("/:id", messageController.getUniqueMessage);
-router.get("/reply/:parentid", messageController.getReplyMessage);
+router.get("/reply/:parentid/:user", messageController.getReplyMessage);
 router.post("/", messageController.createMessage);
 router.put("/:id", messageController.updateMessage);
 router.delete("/:id", messageController.deleteMessage);

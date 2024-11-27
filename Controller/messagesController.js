@@ -34,10 +34,13 @@ exports.getUniqueMessage = async (req, res) => {
 
 exports.getReplyMessage = async (req, res) => {
   try {
-    const id = req.params.parentid;
+    const { parentid, user } = req.params;
     const result = await prisma.messages.findMany({
       where: {
-        parentid: id,
+        parentid: parentid,
+        holders: {
+          array_contains: user,
+        },
       },
       orderBy: {
         date: "desc",

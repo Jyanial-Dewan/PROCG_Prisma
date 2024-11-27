@@ -109,8 +109,8 @@ io.on("connection", (socket) => {
     io.to(user).emit("sync", id);
   });
 
-  socket.on("countSyncSocketMsg", ({ id, user }) => {
-    io.to(user).emit("removeMsgFromSocketMessages", id);
+  socket.on("deleteMessage", ({ id, user }) => {
+    io.to(user).emit("deletedMessage", id);
   });
 
   socket.on("disconnect", () => {
