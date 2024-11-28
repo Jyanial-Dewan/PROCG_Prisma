@@ -45,7 +45,7 @@ sub.on("message", (channel, message) => {
 io.use((socket, next) => {
   const key = socket.handshake.query.key;
 
-  if (!key) {
+  if (!key || key === "undefined") {
     return;
   } else {
     socket.join(key);
