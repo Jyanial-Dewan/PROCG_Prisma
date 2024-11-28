@@ -338,37 +338,22 @@ exports.setToRecycleBin = async (req, res) => {
         },
       },
     });
-    if (messagesToUpdate.holders.includes(user)) {
-      messagesToUpdate.holders = messagesToUpdate.holders.filter(
-        (reader) => reader !== user
-      );
+    messagesToUpdate.holders = messagesToUpdate.holders.filter(
+      (holder) => holder !== user
+    );
 
-      if (messagesToUpdate.involvedusers.includes(user)) {
-        messagesToUpdate.involvedusers = messagesToUpdate.involvedusers.filter(
-          (reader) => reader !== user
-        );
-      }
-      if (messagesToUpdate.readers.includes(user)) {
-        messagesToUpdate.readers = messagesToUpdate.readers.filter(
-          (reader) => reader !== user
-        );
-      }
+    messagesToUpdate.recyclebin.push(user);
 
-      messagesToUpdate.recyclebin.push(user);
-    }
+    await prisma.messages.update({
+      where: {
+        id: id,
+      },
+      data: messagesToUpdate,
+    });
 
-    if (messagesToUpdate) {
-      await prisma.messages.update({
-        where: {
-          id: messagesToUpdate.id,
-        },
-        data: messagesToUpdate,
-      });
-
-      return res
-        .status(200)
-        .json({ messages: "Successfully moved to recyclebin." });
-    }
+    return res
+      .status(200)
+      .json({ messages: "Successfully moved to recyclebin." });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -386,10 +371,6 @@ exports.removeUserFromRecycleBin = async (req, res) => {
       },
     });
 
-    //update the recyclebin user
-    uniqueDeleteMsg.involvedusers = uniqueDeleteMsg.involvedusers.filter(
-      (recycleuser) => recycleuser !== user
-    );
     uniqueDeleteMsg.recyclebin = uniqueDeleteMsg.recyclebin.filter(
       (recycleuser) => recycleuser !== user
     );
