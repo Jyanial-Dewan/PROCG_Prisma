@@ -281,9 +281,6 @@ exports.getRecycleBinMessages = async (req, res) => {
           array_contains: user,
         },
       },
-      orderBy: {
-        date: "desc",
-      },
     });
 
     if (result) {
