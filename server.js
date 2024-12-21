@@ -113,6 +113,12 @@ io.on("connection", (socket) => {
     io.to(user).emit("deletedMessage", id);
   });
 
+  socket.on("multipleDelete", ({ ids, user }) => {
+    for (const id of ids) {
+      io.to(user).emit("deletedMessage", id);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);
     for (const key in users) {
