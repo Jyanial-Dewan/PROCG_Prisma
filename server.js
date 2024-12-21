@@ -20,6 +20,7 @@ const io = socketIo(server, {
 
 const options = {
   origin: JSON.parse(process.env.ALLOWED_ORIGINS),
+  credentials: true,
 };
 app.use(express.json());
 app.use(cors(options));

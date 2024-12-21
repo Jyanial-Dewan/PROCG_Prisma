@@ -17,9 +17,16 @@ const manageAccessModelLogicsRoutes = require("../Routes/manageAccessModelLogics
 const manageAccessModelLogicAttributesRoutes = require("./manageAccessModelLogicAttributesRoutes");
 const controlesRoutes = require("./controlsRoutes");
 const Router = require("express");
+const verifyUser = require("../Authentication/verifyUser");
+const cookieParser = require("cookie-parser");
 
 const routes = Router();
 
+routes.use(cookieParser());
+routes.use("/login", authentication);
+routes.use("/logout", authentication);
+routes.use(verifyUser);
+routes.use("/auth", authentication);
 routes.use("/persons", defPersonsRoutes);
 routes.use("/users", defUsersRoutes);
 routes.use("/tenants", defTenantsRoutes);
