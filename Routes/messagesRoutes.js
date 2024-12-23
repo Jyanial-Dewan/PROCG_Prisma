@@ -7,7 +7,7 @@ router.get("/", messageController.message);
 router.get("/:id", messageController.getUniqueMessage);
 router.get("/reply/:parentid/:user", messageController.getReplyMessage);
 router.post("/", messageController.createMessage);
-// router.put("/:id", messageController.updateMessage);
+router.put("/:id", messageController.updateMessage);
 router.delete("/:id", messageController.deleteMessage);
 router.get("/received/:user/:page", messageController.getRecievedMessages);
 router.get("/notification/:user", messageController.getNotificationMessages);
