@@ -83,37 +83,37 @@ exports.createMessage = async (req, res) => {
   }
 };
 
-// exports.updateMessage = async (req, res) => {
-//   try {
-//     const message_data = req.body;
-//     const id = req.params.id;
+exports.updateMessage = async (req, res) => {
+  try {
+    const message_data = req.body;
+    const id = req.params.id;
 
-//     const result = await prisma.messages.update({
-//       where: {
-//         id: id,
-//       },
+    const result = await prisma.messages.update({
+      where: {
+        id: id,
+      },
 
-//       data: {
-//         sender: message_data.sender,
-//         recivers: message_data.recivers,
-//         subject: message_data.subject,
-//         body: message_data.body,
-//         date: message_data.date,
-//         status: message_data.status,
-//         parentid: message_data.parentid,
-//         involvedusers: message_data.involvedusers,
-//         readers: message_data.readers,
-//         holders: message_data.holders,
-//         recyclebin: message_data.recyclebin,
-//       },
-//     });
-//     if (result) {
-//       return res.status(200).json({ result });
-//     }
-//   } catch (error) {
-//     return res.status(500).json({ error: error.message });
-//   }
-// };
+      data: {
+        sender: message_data.sender,
+        recivers: message_data.recivers,
+        subject: message_data.subject,
+        body: message_data.body,
+        date: message_data.date,
+        status: message_data.status,
+        parentid: message_data.parentid,
+        involvedusers: message_data.involvedusers,
+        readers: message_data.readers,
+        holders: message_data.holders,
+        recyclebin: message_data.recyclebin,
+      },
+    });
+    if (result) {
+      return res.status(200).json({ result });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
 
 exports.deleteMessage = async (req, res) => {
   try {
