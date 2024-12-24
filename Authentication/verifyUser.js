@@ -4,6 +4,7 @@ const verifyUser = (req, res, next) => {
   try {
     const token =
       req?.cookies?.access_token ||
+      req?.body?.access_token ||
       req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token)
@@ -13,11 +14,13 @@ const verifyUser = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_SECRET_ACCESS_TOKEN, (err, user) => {
       if (err) {
+        //if token expired
         if (err.name === "TokenExpiredError") {
           return res
             .status(401)
             .json({ message: "Unauthorized Access: Token has expired" });
         }
+        //if token is invalid
         return res.status(403).json({ message: "Forbidden: Invalid token" });
       }
 
