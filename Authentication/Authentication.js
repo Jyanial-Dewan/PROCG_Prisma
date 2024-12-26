@@ -71,6 +71,9 @@ exports.login = async (req, res) => {
         userCredential.password,
         password
       );
+      if (!passwordResult) {
+        return res.status(401).json({ message: "Invalid password." });
+      }
       console.log({ passwordResult });
       // const encryptedPassword = hashPassword(password);
       if (userCredential && passwordResult) {

@@ -94,44 +94,42 @@ exports.deleteDefPerson = async (req, res) => {
 };
 
 exports.updateDefPerson = async (req, res) => {
-  const filePath = req.file.path.replace(/\\/g, "/");
+  try {
+    const defPersonID = Number(req.params.id);
+    const defPersonData = req.body;
 
-  // try {
-  //   const defPersonID = Number(req.params.id);
-  //   const defPersonData = req.body;
+    const findDefPerson = await prisma.def_persons.findUnique({
+      where: {
+        user_id: defPersonID,
+      },
+    });
 
-  //   const findDefPerson = await prisma.def_persons.findUnique({
-  //     where: {
-  //       user_id: defPersonID,
-  //     },
-  //   });
+    if (!findDefPerson) {
+      return res.status(404).json({ message: "Person not found" });
+    }
 
-  //   if (!findDefPerson) {
-  //     return res.status(404).json({ message: "Person not found" });
-  //   }
+    if (!defPersonData.first_name || !defPersonData.job_title) {
+      return res
+        .status(422)
+        .json({ message: "first_name and job_title is required" });
+    }
 
-  //   if (!defPersonData.first_name || !defPersonData.job_title) {
-  //     return res
-  //       .status(422)
-  //       .json({ message: "first_name and job_title is required" });
-  //   }
+    const updatedDefPerson = await prisma.def_persons.update({
+      where: {
+        user_id: defPersonID,
+      },
+      data: {
+        first_name: defPersonData.first_name,
+        middle_name: defPersonData.middle_name,
+        last_name: defPersonData.last_name,
+        job_title: defPersonData.job_title,
+      },
+    });
 
-  //   const updatedDefPerson = await prisma.def_persons.update({
-  //     where: {
-  //       user_id: defPersonID,
-  //     },
-  //     data: {
-  //       first_name: defPersonData.first_name,
-  //       middle_name: defPersonData.middle_name,
-  //       last_name: defPersonData.last_name,
-  //       job_title: defPersonData.job_title,
-  //     },
-  //   });
-
-  //   return res.status(200).json(updatedDefPerson);
-  // } catch (error) {
-  //   return res.status(500).json({ error: error.message });
-  // }
+    return res.status(200).json(updatedDefPerson);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
 // perPagePersons Data
 exports.perPagePersons = async (req, res) => {

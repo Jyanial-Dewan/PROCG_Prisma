@@ -26,6 +26,14 @@ app.use(express.json());
 app.use(cors(options));
 app.use(require("./Routes/index"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: err.message });
+  } else if (err) {
+    return res.status(500).json({ error: "An unexpected error occurred." });
+  }
+  next();
+});
 
 // Import and initialize socket.io handlers
 require("./Services/Socket/socket")(io);
