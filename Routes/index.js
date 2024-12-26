@@ -1,3 +1,10 @@
+const Router = require("express");
+const cookieParser = require("cookie-parser");
+const verifyUser = require("../Middleware/verifyUser");
+
+const routes = Router();
+
+// routes
 const defPersonsRoutes = require("../Routes/defPersonsRoutes");
 const defUsersRoutes = require("../Routes/defUsersRoutes");
 const defTenantsRoutes = require("../Routes/defTenantsRoutes");
@@ -16,11 +23,6 @@ const manageAccessModelsRoutes = require("../Routes/manageAccessModelsRoutes");
 const manageAccessModelLogicsRoutes = require("../Routes/manageAccessModelLogicsRoutes");
 const manageAccessModelLogicAttributesRoutes = require("./manageAccessModelLogicAttributesRoutes");
 const controlesRoutes = require("./controlsRoutes");
-const Router = require("express");
-const verifyUser = require("../Authentication/verifyUser");
-const cookieParser = require("cookie-parser");
-
-const routes = Router();
 
 routes.use(cookieParser());
 routes.use("/login", authentication);
