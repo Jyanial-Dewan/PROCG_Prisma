@@ -6,14 +6,16 @@ dotenv.config();
 
 const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN;
 const JWT_SECRET_REFRESH_TOKEN = process.env.JWT_SECRET_REFRESH_TOKEN;
+const ACCESS_TOKEN_EXPIRED_TIME = process.env.ACCESS_TOKEN_EXPIRED_TIME;
+const REFRESH_TOKEN_EXPIRED_TIME = process.env.REFRESH_TOKEN_EXPIRED_TIME;
 
 //Generate access token and refresh token
 const generateAccessTokenAndRefreshToken = (props) => {
   const accessToken = jwt.sign(props, JWT_SECRET_ACCESS_TOKEN, {
-    expiresIn: "1h",
+    expiresIn: ACCESS_TOKEN_EXPIRED_TIME,
   });
   const refreshToken = jwt.sign(props, JWT_SECRET_REFRESH_TOKEN, {
-    expiresIn: "7d",
+    expiresIn: REFRESH_TOKEN_EXPIRED_TIME,
   });
   return { accessToken, refreshToken };
 };
