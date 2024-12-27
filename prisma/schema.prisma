@@ -104,6 +104,7 @@ model def_users {
   last_updated_by             Int?
   last_updated_on             String?
   tenant_id                   Int?
+  profile_picture             String?
   def_user_granted_privileges def_user_granted_privileges[]
   def_user_granted_roles      def_user_granted_roles[]
 }
@@ -263,7 +264,6 @@ model access_entitlement_elements {
 
   @@id([entitlement_id, access_point_id])
 }
-
 model def_users_v {
   user_id         Int     @id
   user_name       String?
@@ -277,6 +277,7 @@ model def_users_v {
   last_updated_by Int?
   last_updated_on String?
   tenant_id       Int?
+  profile_picture String?
 
   @@map("def_users_v")
 }

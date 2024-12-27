@@ -200,8 +200,10 @@ exports.getUsersWithPageAndLimit = async (req, res) => {
   }
 };
 exports.updateUser = async (req, res) => {
+  const filePath = req.file?.path.replace(/\\/g, "/");
+
   try {
-    const data = req.body;
+    const { user_name, email_addresses, first_name, last_name } = req.body;
     const id = Number(req.params.id);
     // Validation  START/---------------------------------/
     const findDefUserId = await prisma.def_users.findUnique({
@@ -218,8 +220,11 @@ exports.updateUser = async (req, res) => {
         user_id: id,
       },
       data: {
-        user_name: data.user_name,
-        email_addresses: data.email_addresses,
+        user_name: user_name ? user_name : findDefUserId.user_name,
+        email_addresses: email_addresses
+          ? email_addresses
+          : findDefUserId.email_addresses,
+        profile_picture: filePath ? filePath : findDefUserId.profile_picture,
       },
     });
     await prisma.def_persons.update({
@@ -227,23 +232,12 @@ exports.updateUser = async (req, res) => {
         user_id: id,
       },
       data: {
-        first_name: data.first_name,
-        middle_name: data.middle_name,
-        last_name: data.last_name,
-        job_title: data.job_title,
+        first_name: first_name ? first_name : findDefUserId.first_name,
+        last_name: last_name ? last_name : findDefUserId.last_name,
       },
     });
-    if (data.password) {
-      const res = await prisma.def_user_credentials.update({
-        where: {
-          user_id: id,
-        },
-        data: {
-          password: await hashPassword(data.password),
-        },
-      });
-    }
-    return res.status(200).json({ result: "Updated successfully ." });
+
+    return res.status(200).json({ message: "Updated successfully ." });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

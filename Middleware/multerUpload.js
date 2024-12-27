@@ -8,36 +8,42 @@ if (!fs.existsSync(UPLOAD_FOLDER)) {
   fs.mkdirSync(UPLOAD_FOLDER, { recursive: true });
 }
 
-// Helper function to delete previous images in a user's folder
-const deleteExistingImages = (folderPath) => {
+// Asynchronous function to delete existing images
+const deleteExistingImages = async (folderPath) => {
   if (fs.existsSync(folderPath)) {
-    fs.readdirSync(folderPath).forEach((file) => {
+    const files = await fs.promises.readdir(folderPath);
+    for (const file of files) {
       const filePath = path.join(folderPath, file);
-      if (fs.lstatSync(filePath).isFile()) {
-        fs.unlinkSync(filePath);
+      const stat = await fs.promises.lstat(filePath);
+      if (stat.isFile()) {
+        await fs.promises.unlink(filePath);
       }
-    });
+    }
   }
 };
 
 // Multer configuration
 const upload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      const userFolder = path.join(
-        UPLOAD_FOLDER,
-        req.user.user_name.toLowerCase()
-      );
+    destination: async (req, file, cb) => {
+      try {
+        const userFolder = path.join(
+          UPLOAD_FOLDER,
+          req.user.user_name.toLowerCase()
+        );
 
-      // Delete existing images in the user's folder
-      deleteExistingImages(userFolder);
+        // Delete existing images in the user's folder
+        await deleteExistingImages(userFolder);
 
-      // Ensure the user's folder exists
-      if (!fs.existsSync(userFolder)) {
-        fs.mkdirSync(userFolder, { recursive: true });
+        // Ensure the user's folder exists
+        if (!fs.existsSync(userFolder)) {
+          fs.mkdirSync(userFolder, { recursive: true });
+        }
+
+        cb(null, userFolder); // Set the upload destination
+      } catch (err) {
+        cb(err);
       }
-
-      cb(null, userFolder); // Set the upload destination
     },
     filename: (req, file, cb) => {
       const fileExt = path.extname(file.originalname);
