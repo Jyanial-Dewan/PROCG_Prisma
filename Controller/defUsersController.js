@@ -34,6 +34,7 @@ exports.getUniqueDefUser = async (req, res) => {
 };
 //Create User
 exports.createDefUser = async (req, res) => {
+  const profile_picture = "uploads/profiles/default/profile.jpg";
   try {
     // Validation  START/---------------------------------/
     const user_data = req.body;
@@ -65,6 +66,7 @@ exports.createDefUser = async (req, res) => {
         last_updated_by: user_data.last_updated_by,
         last_updated_on: currentDate,
         tenant_id: user_data.tenant_id,
+        profile_picture: profile_picture,
       },
     });
     if (result) {

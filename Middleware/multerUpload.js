@@ -47,8 +47,7 @@ const upload = multer({
     },
     filename: (req, file, cb) => {
       const fileExt = path.extname(file.originalname);
-      const fileName =
-        file.originalname.replace(fileExt, "").toLowerCase() + "-" + Date.now();
+      const fileName = file.originalname.replace(fileExt, "").toLowerCase();
       cb(null, fileName + fileExt);
     },
   }),
