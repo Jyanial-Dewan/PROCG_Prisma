@@ -200,7 +200,7 @@ exports.getUsersWithPageAndLimit = async (req, res) => {
   }
 };
 exports.updateUser = async (req, res) => {
-  const filePath = req.file.path.replace(/\\/g, "/");
+  const filePath = req.file?.path.replace(/\\/g, "/");
 
   try {
     const { user_name, email_addresses, first_name, last_name } = req.body;
