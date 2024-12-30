@@ -36,6 +36,7 @@ exports.createCombinedUser = async (req, res) => {
   try {
     const combinedUserData = req.body;
     const currentTime = new Date();
+    const profile_picture = "uploads/profiles/default/profile.jpg";
     const maxUserIDResult = await prisma.def_users.aggregate({
       _max: {
         user_id: true,
@@ -56,6 +57,7 @@ exports.createCombinedUser = async (req, res) => {
           last_updated_by: combinedUserData.last_updated_by,
           last_updated_on: currentTime.toLocaleString(),
           tenant_id: combinedUserData.tenant_id,
+          profile_picture: profile_picture,
         },
       });
 
