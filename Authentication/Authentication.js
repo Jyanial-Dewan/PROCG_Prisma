@@ -6,22 +6,6 @@ const axios = require("axios");
 
 dotenv.config();
 
-const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN;
-const JWT_SECRET_REFRESH_TOKEN = process.env.JWT_SECRET_REFRESH_TOKEN;
-const ACCESS_TOKEN_EXPIRED_TIME = process.env.ACCESS_TOKEN_EXPIRED_TIME;
-const REFRESH_TOKEN_EXPIRED_TIME = process.env.REFRESH_TOKEN_EXPIRED_TIME;
-
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
-
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI;
-
-const REDIRECT_APP_URL = process.env.REDIRECT_APP_URL;
-const downloadAndSaveImage = require("../Middleware/multerDownloadImage");
-
 //Generate access token and refresh token
 const generateAccessTokenAndRefreshToken = (props) => {
   const accessToken = jwt.sign(props, JWT_SECRET_ACCESS_TOKEN, {
@@ -231,7 +215,23 @@ exports.refreshToken = async (req, res) => {
   }
 };
 
+// Social Login---------START
 // google login
+const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN;
+const JWT_SECRET_REFRESH_TOKEN = process.env.JWT_SECRET_REFRESH_TOKEN;
+const ACCESS_TOKEN_EXPIRED_TIME = process.env.ACCESS_TOKEN_EXPIRED_TIME;
+const REFRESH_TOKEN_EXPIRED_TIME = process.env.REFRESH_TOKEN_EXPIRED_TIME;
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
+
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI;
+
+const REDIRECT_APP_URL = process.env.REDIRECT_APP_URL;
+const downloadAndSaveImage = require("../Middleware/multerDownloadImage");
 
 // Step 1: Google Login URL
 exports.googleLogin = (req, res) => {
@@ -492,3 +492,4 @@ exports.githubCallback = async (req, res) => {
     }
   }
 };
+// Social Login---------END
