@@ -2,12 +2,25 @@ const prisma = require("../DB/db.config");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const dotenv = require("dotenv");
+const axios = require("axios");
+
 dotenv.config();
 
 const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN;
 const JWT_SECRET_REFRESH_TOKEN = process.env.JWT_SECRET_REFRESH_TOKEN;
 const ACCESS_TOKEN_EXPIRED_TIME = process.env.ACCESS_TOKEN_EXPIRED_TIME;
 const REFRESH_TOKEN_EXPIRED_TIME = process.env.REFRESH_TOKEN_EXPIRED_TIME;
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
+
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI;
+
+const SERVER_URL = process.env.SERVER_URL;
+const downloadAndSaveImage = require("../Middleware/multerDownloadImage");
 
 //Generate access token and refresh token
 const generateAccessTokenAndRefreshToken = (props) => {
@@ -215,5 +228,194 @@ exports.refreshToken = async (req, res) => {
     );
   } catch (error) {
     return res.status(500).json({ error: "Invalid or expired refresh token" });
+  }
+};
+
+// google login
+
+// Step 1: Google Login URL
+exports.googleLogin = (req, res) => {
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email%20profile`;
+  res.redirect(googleAuthUrl);
+};
+
+// Step 2: Handle Google Callback
+exports.googleCallback = async (req, res) => {
+  const code = req.query.code;
+  try {
+    const { data } = await axios.post(
+      "https://oauth2.googleapis.com/token",
+      {
+        code,
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        grant_type: "authorization_code",
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    const { access_token } = data;
+    const profile = await axios.get(
+      "https://www.googleapis.com/oauth2/v2/userinfo",
+      { headers: { Authorization: `Bearer ${access_token}` } }
+    );
+
+    const userEmail = profile.data.email;
+
+    // Check if user exists, else create
+    let user = await prisma.def_users.findFirst({
+      where: {
+        email_addresses: {
+          array_contains: userEmail,
+        },
+      },
+    });
+
+    if (!user) {
+      const maxUserIDResult = await prisma.def_users.aggregate({
+        _max: {
+          user_id: true,
+        },
+      });
+      const baseUserName = profile.data.name.split(" ").join("").toLowerCase();
+
+      let userName = baseUserName;
+
+      // Check if the username exists
+      const existingUser = await prisma.def_users.findFirst({
+        where: { user_name: userName },
+      });
+
+      if (existingUser) {
+        userName = `${baseUserName}${1}`;
+      }
+
+      const savedFilePath = await downloadAndSaveImage(
+        profile.data.picture,
+        userName
+      );
+
+      // console.log(savedFilePath, "savedFilePath");
+      const currentTime = new Date();
+      const maxID = maxUserIDResult._max.user_id + 1;
+      user = await prisma.def_users.create({
+        data: {
+          user_id: maxID,
+          user_name: userName,
+          user_type: "person",
+          email_addresses: [userEmail],
+          created_by: 99,
+          created_on: currentTime.toLocaleString(),
+          last_updated_by: 99,
+          last_updated_on: currentTime.toLocaleString(),
+          tenant_id: 1,
+          profile_picture: savedFilePath,
+        },
+      });
+      await prisma.def_persons.create({
+        data: {
+          user_id: maxID,
+          first_name: profile.data.given_name,
+          middle_name: "",
+          last_name: profile.data.family_name,
+          job_title: "Visitor",
+        },
+      });
+
+      await prisma.def_user_credentials.create({
+        data: {
+          user_id: maxID,
+          password: crypto.randomBytes(64).toString("hex"),
+        },
+      });
+    }
+
+    const { accessToken, refreshToken } = generateAccessTokenAndRefreshToken({
+      isLoggedIn: true,
+      user_id: user.user_id,
+      user_type: user.user_type,
+      user_name: user.user_name,
+      tenant_id: user.tenant_id,
+      issuedAt: new Date(),
+    });
+
+    res
+      .status(200)
+      .cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: true,
+      })
+      .cookie("access_token", accessToken, {
+        httpOnly: true,
+        secure: false,
+      })
+      .redirect(
+        `${SERVER_URL}?user_id=${user.user_id}&email=${userEmail}&access_token=${accessToken}`
+      );
+  } catch (error) {
+    console.error(error);
+    if (!res.headersSent) {
+      res
+        .status(500)
+        .json({ error: "Field to create user via google account." })
+        .redirect(`${SERVER_URL}/login`);
+    }
+  }
+};
+
+// Step 1: GitHub Login URL
+exports.githubLogin = (req, res) => {
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_REDIRECT_URI}&scope=user:email`;
+  res.redirect(githubAuthUrl);
+};
+
+// Step 2: Handle GitHub Callback
+exports.githubCallback = async (req, res) => {
+  const code = req.query.code;
+  try {
+    const { data } = await axios.post(
+      "https://github.com/login/oauth/access_token",
+      {
+        code,
+        client_id: GITHUB_CLIENT_ID,
+        client_secret: GITHUB_CLIENT_SECRET,
+        redirect_uri: GITHUB_REDIRECT_URI,
+      },
+      { headers: { Accept: "application/json" } }
+    );
+
+    const { access_token } = data;
+    const profile = await axios.get("https://api.github.com/user", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    const userEmail = profile.data.email;
+
+    // Check if user exists, else create
+    let user = await prisma.user.findUnique({
+      where: { email_addresses: userEmail },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          user_id: Date.now(),
+          user_name: profile.data.login,
+          user_type: "github",
+          email_addresses: userEmail,
+          created_by: "system",
+          created_on: new Date().toISOString(),
+          last_updated_by: "system",
+          last_updated_on: new Date().toISOString(),
+          tenant_id: "default",
+        },
+      });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("GitHub Authentication Failed");
   }
 };
