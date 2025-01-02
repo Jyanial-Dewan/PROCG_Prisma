@@ -264,6 +264,19 @@ model access_entitlement_elements {
 
   @@id([entitlement_id, access_point_id])
 }
+
+model linked_devices {
+  id              Int       @id(map: "liked_devices_pkey") @default(autoincrement())
+  user_id         Int
+  device_type     String?   @db.VarChar(50)
+  browser_name    String?   @db.VarChar(50)
+  browser_version String?   @db.VarChar(20)
+  os              String?   @db.VarChar(50)
+  user_agent      String?
+  added_at        DateTime? @default(now()) @db.Timestamp(6)
+  is_active       Int?
+}
+
 model def_users_v {
   user_id         Int     @id
   user_name       String?

@@ -97,6 +97,15 @@ const socket = (io) => {
       }
     });
 
+    // Device Action
+    socket.on("addDevice", (data) => {
+      io.to(data.user).emit("addDevice", data);
+    });
+
+    socket.on("inactiveDevice", (data) => {
+      io.to(data.user).emit("inactiveDevice", data);
+    });
+
     socket.on("disconnect", () => {
       console.log("user disconnected", socket.id);
       for (const key in users) {
