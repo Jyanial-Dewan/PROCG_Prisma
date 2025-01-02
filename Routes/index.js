@@ -23,6 +23,7 @@ const manageAccessModelsRoutes = require("../Routes/manageAccessModelsRoutes");
 const manageAccessModelLogicsRoutes = require("../Routes/manageAccessModelLogicsRoutes");
 const manageAccessModelLogicAttributesRoutes = require("./manageAccessModelLogicAttributesRoutes");
 const controlesRoutes = require("./controlsRoutes");
+const linkedDevicesRoutes = require("./linkedDevicesRoutes");
 
 routes.use(cookieParser());
 routes.use("/login", authentication);
@@ -56,5 +57,6 @@ routes.use(
   manageAccessModelLogicAttributesRoutes
 );
 routes.use("/controls", controlesRoutes);
+routes.use("/devices", linkedDevicesRoutes);
 
 module.exports = routes;
