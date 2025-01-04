@@ -7,6 +7,9 @@ exports.getDevices = async (req, res) => {
       where: {
         user_id: Number(user_id),
       },
+      orderBy: {
+        id: "desc",
+      },
     });
 
     return res.status(200).json(result);
@@ -26,6 +29,7 @@ exports.addDevice = async (req, res) => {
         device_type: deviceInfo.device_type,
         browser_name: deviceInfo.browser_name,
         os: deviceInfo.os,
+        ip_address: deviceInfo.ip_address,
       },
     });
     // console.log(device, "device");
@@ -39,6 +43,8 @@ exports.addDevice = async (req, res) => {
           os: deviceInfo.os,
           user_agent: deviceInfo.user_agent,
           is_active: deviceInfo.is_active,
+          ip_address: deviceInfo.ip_address,
+          location: deviceInfo.location,
         },
       });
       return res.status(201).json(result);
@@ -48,6 +54,7 @@ exports.addDevice = async (req, res) => {
       where: {
         id: device.id,
         user_id: Number(user_id),
+        ip_address: deviceInfo.ip_address,
       },
       data: {
         user_id: Number(user_id),
@@ -57,6 +64,8 @@ exports.addDevice = async (req, res) => {
         os: deviceInfo.os,
         user_agent: deviceInfo.user_agent,
         is_active: deviceInfo.is_active,
+        ip_address: deviceInfo.ip_address,
+        location: deviceInfo.location,
       },
     });
     // console.log(result, "result");
