@@ -41,6 +41,7 @@ exports.getReplyMessage = async (req, res) => {
         holders: {
           array_contains: user,
         },
+        status: "Sent",
       },
       orderBy: {
         date: "desc",
