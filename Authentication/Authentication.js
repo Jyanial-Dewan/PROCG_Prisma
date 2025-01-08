@@ -220,13 +220,3 @@ exports.refreshToken = async (req, res) => {
     return res.status(500).json({ error: "Invalid or expired refresh token" });
   }
 };
-
-// user ip info
-exports.userIpInfo = async (req, res) => {
-  try {
-    const ipInfo = await axios.get(`${IP_INFO_URL}`);
-    return res.status(200).json(ipInfo.data);
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-};

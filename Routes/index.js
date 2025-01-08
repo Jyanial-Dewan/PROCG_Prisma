@@ -34,7 +34,6 @@ routes.use("/persons", defPersonsRoutes);
 routes.use("/users", defUsersRoutes);
 routes.use("/tenants", defTenantsRoutes);
 routes.use("/user-credentials", defUserCredentialsRoutes);
-routes.use("/login", authentication);
 routes.use("/messages", messagesRoutes);
 routes.use("/data-sources", dataSourcesRoutes);
 routes.use("/manage-access-entitlements", manageAccessEntitlementsRoutes);
