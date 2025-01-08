@@ -244,7 +244,7 @@ exports.getDraftMessages = async (req, res) => {
     const result = await prisma.messages.findMany({
       where: {
         sender: user,
-        status: "Draft",
+        status: { in: ["Draft", "ReplayDraft"] },
         holders: {
           array_contains: user,
         },
@@ -479,7 +479,7 @@ exports.getTotalDraftMessages = async (req, res) => {
     const result = await prisma.messages.findMany({
       where: {
         sender: user,
-        status: "Draft",
+        status: { in: ["Draft", "ReplayDraft"] },
         holders: {
           array_contains: user,
         },
