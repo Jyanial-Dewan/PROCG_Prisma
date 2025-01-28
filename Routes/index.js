@@ -25,6 +25,7 @@ const manageAccessModelLogicAttributesRoutes = require("./manageAccessModelLogic
 const controlesRoutes = require("./controlsRoutes");
 const linkedDevicesRoutes = require("./linkedDevicesRoutes");
 const armRoutes = require("./armRoutes");
+const asynchronousRequestsAndTaskSchedulesRoutes = require("./asynchronousRequestsAndTaskSchedulesRoutes");
 
 routes.use(cookieParser());
 routes.use("/login", authentication);
@@ -60,5 +61,9 @@ routes.use("/controls", controlesRoutes);
 routes.use("/devices", linkedDevicesRoutes);
 routes.use("/arm-tasks", armRoutes);
 routes.use("/arm-task-parameters", armRoutes);
+routes.use(
+  "/asynchronous-requests-and-task-schedules",
+  asynchronousRequestsAndTaskSchedulesRoutes
+);
 
 module.exports = routes;
