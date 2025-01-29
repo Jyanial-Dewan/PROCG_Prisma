@@ -8,6 +8,10 @@ router.get(
   asynchronousRequestsAndTaskSchedulesController.getTaskSchedules
 );
 router.get(
+  "/:page/:limit",
+  asynchronousRequestsAndTaskSchedulesController.getTaskSchedulesLazyLoading
+);
+router.get(
   "/:task_name/:arm_param_id",
   asynchronousRequestsAndTaskSchedulesController.getTaskSchedule
 );

@@ -1,11 +1,33 @@
 const { default: axios } = require("axios");
 const arm_api_url = process.env.ARM_API_URL;
 
+const pageLimitData = (page, limit) => {
+  const pageNumber = parseInt(page);
+  const limitNumber = parseInt(limit);
+  let startNumber = 0;
+  const endNumber = pageNumber * limitNumber;
+  if (pageNumber > 1) {
+    const pageInto = pageNumber - 1;
+    startNumber = pageInto * limitNumber;
+  }
+  return { startNumber, endNumber };
+};
+
 exports.getARMTasks = async (req, res) => {
   const response = await axios.get(`${arm_api_url}/Show_Tasks`);
   const sortedData = response.data.sort(
     (a, b) => b?.arm_task_id - a?.arm_task_id
   );
+  return res.status(200).json(sortedData);
+};
+
+exports.getARMTasksLazyLoading = async (req, res) => {
+  const { page, limit } = req.params;
+  const { startNumber, endNumber } = pageLimitData(page, limit);
+  const response = await axios.get(`${arm_api_url}/Show_Tasks`);
+
+  const results = response.data.slice(startNumber, endNumber);
+  const sortedData = results.sort((a, b) => b?.arm_task_id - a?.arm_task_id);
   return res.status(200).json(sortedData);
 };
 exports.getARMTask = async (req, res) => {
@@ -57,6 +79,21 @@ exports.getTaskParams = async (req, res) => {
       (a, b) => b.arm_task_id - a.arm_task_id
     );
     return res.status(200).json(sortedData);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+exports.getTaskParamsLazyLoading = async (req, res) => {
+  const { task_name, page, limit } = req.params;
+  try {
+    const { startNumber, endNumber } = pageLimitData(page, limit);
+    const response = await axios.get(
+      `${arm_api_url}/Show_TaskParams/${task_name}`
+    );
+
+    const results = response.data.slice(startNumber, endNumber);
+
+    return res.status(200).json(results);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
