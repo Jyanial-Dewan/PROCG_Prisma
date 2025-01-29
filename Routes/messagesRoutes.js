@@ -36,4 +36,9 @@ router.put(
   messageController.moveMultipleToRecycleBin
 );
 
+router.put(
+  "/move-multiple-from-recyclebin/:user",
+  messageController.moveMultipleFromRecycleBin
+);
+
 module.exports = router;
