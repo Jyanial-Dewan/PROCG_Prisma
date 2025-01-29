@@ -523,3 +523,35 @@ exports.moveMultipleToRecycleBin = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+exports.moveMultipleFromRecycleBin = async (req, res) => {
+  const { ids } = req.body;
+  const { user } = req.params;
+  console.log(ids, "ids", user, "user");
+  try {
+    const messagesToUpdate = await prisma.messages.findMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+
+    for (const message of messagesToUpdate) {
+      const updatedRecycle = message.recyclebin.filter((usr) => usr !== user);
+
+      await prisma.messages.update({
+        where: {
+          id: message.id,
+        },
+        data: {
+          recyclebin: updatedRecycle,
+        },
+      });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Messages moved from recyclebin successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
