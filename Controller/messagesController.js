@@ -359,38 +359,6 @@ exports.setToRecycleBin = async (req, res) => {
   }
 };
 
-exports.moveMultipleToRecycleBin = async (req, res) => {
-  const { ids, user } = req.body;
-  try {
-    const messagesToUpdate = await prisma.messages.findMany({
-      where: {
-        id: { in: ids },
-      },
-    });
-
-    for (const message of messagesToUpdate) {
-      const updatedHolders = message.holders.filter((usr) => usr !== user);
-      const recyclbin = message.recyclebin;
-
-      await prisma.messages.update({
-        where: {
-          id: message.id,
-        },
-        data: {
-          holders: updatedHolders,
-          recyclebin: [user, ...recyclbin],
-        },
-      });
-    }
-
-    res
-      .status(200)
-      .json({ message: "Messages moved to recyclebin successfully" });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-};
-
 exports.removeUserFromRecycleBin = async (req, res) => {
   const { id, user } = req.params;
   console.log(id, user);
@@ -517,6 +485,40 @@ exports.getTotalRecycleBinMessages = async (req, res) => {
     } else {
       return res.status(404).json({ error: "User not found." });
     }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.moveMultipleToRecycleBin = async (req, res) => {
+  const { ids } = req.body;
+  const { user } = req.params;
+  console.log(ids, "ids", user, "user");
+  try {
+    const messagesToUpdate = await prisma.messages.findMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+
+    for (const message of messagesToUpdate) {
+      const updatedHolders = message.holders.filter((usr) => usr !== user);
+      const recyclbin = message.recyclebin;
+
+      await prisma.messages.update({
+        where: {
+          id: message.id,
+        },
+        data: {
+          holders: updatedHolders,
+          recyclebin: [user, ...recyclbin],
+        },
+      });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Messages moved to recyclebin successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

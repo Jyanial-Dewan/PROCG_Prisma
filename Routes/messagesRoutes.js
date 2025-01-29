@@ -26,15 +26,14 @@ router.put(
   "/set-user-into-recyclebin/:id/:user",
   messageController.setToRecycleBin
 );
-
-router.put(
-  "/move-multiple-to-recyclebin",
-  messageController.moveMultipleToRecycleBin
-);
-
 router.put(
   "/remove-user-from-recyclebin/:id/:user",
   messageController.removeUserFromRecycleBin
+);
+
+router.put(
+  "/move-multiple-to-recyclebin/:user",
+  messageController.moveMultipleToRecycleBin
 );
 
 module.exports = router;
