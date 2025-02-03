@@ -27,7 +27,11 @@ exports.getTaskSchedulesLazyLoading = async (req, res) => {
   try {
     const response = await axios.get(`${arm_api_url}/Show_TaskSchedules`);
 
-    const results = response.data.slice(startNumber, endNumber);
+    // const results = response.data.slice(startNumber, endNumber);
+    const filterData = response.data.filter(
+      (item) => item.user_schedule_name != "ad-hoc"
+    );
+    const results = filterData.slice(startNumber, endNumber);
     return res.status(200).json(results);
   } catch (error) {
     res.status(500).json({ error: error.message });

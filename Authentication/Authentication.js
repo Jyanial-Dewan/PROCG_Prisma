@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const dotenv = require("dotenv");
 const axios = require("axios");
+const { profile } = require("console");
 
 dotenv.config();
 
@@ -88,6 +89,7 @@ exports.login = async (req, res) => {
             user_type: user.user_type,
             user_name: user.user_name,
             tenant_id: user.tenant_id,
+            profile_picture: user.profile_picture,
             issuedAt: new Date(),
           });
 
@@ -107,6 +109,7 @@ exports.login = async (req, res) => {
             user_type: user.user_type,
             user_name: user.user_name,
             tenant_id: user.tenant_id,
+            profile_picture: user.profile_picture,
             access_token: accessToken,
             refresh_token: refreshToken,
             issuedAt: new Date(),
@@ -191,6 +194,7 @@ exports.refreshToken = async (req, res) => {
             user_type: user.user_type,
             user_name: user.user_name,
             tenant_id: user.tenant_id,
+            profile_picture: user.profile_picture,
             issuedAt: new Date(),
           });
 
@@ -210,6 +214,7 @@ exports.refreshToken = async (req, res) => {
             user_type: user.user_type,
             user_name: user.user_name,
             tenant_id: user.tenant_id,
+            profile_picture: user.profile_picture,
             access_token: accessToken,
             refresh_token: refreshToken,
             issuedAt: new Date(),

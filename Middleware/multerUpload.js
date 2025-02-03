@@ -46,9 +46,10 @@ const upload = multer({
       }
     },
     filename: (req, file, cb) => {
-      const fileExt = path.extname(file.originalname);
-      const fileName = file.originalname.replace(fileExt, "").toLowerCase();
-      cb(null, fileName + fileExt);
+      // const fileExt = path.extname(file.originalname);
+      // const fileName = file.originalname.replace(fileExt, "").toLowerCase();
+      // cb(null, fileName + fileExt);
+      cb(null, "profile.jpg");
     },
   }),
   limits: {
