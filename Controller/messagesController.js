@@ -144,10 +144,10 @@ exports.getRecievedMessages = async (req, res) => {
     }
     const result = await prisma.messages.findMany({
       where: {
-        recivers: {
-          array_contains: user,
-        },
         status: "Sent",
+        recivers: {
+          array_contains: [{ name: user }],
+        },
         holders: {
           array_contains: user,
         },
@@ -209,7 +209,7 @@ exports.getSentMessages = async (req, res) => {
     }
     const result = await prisma.messages.findMany({
       where: {
-        sender: user,
+        sender: { path: ["name"], string_contains: user },
         status: "Sent",
         holders: {
           array_contains: user,
@@ -219,7 +219,8 @@ exports.getSentMessages = async (req, res) => {
         date: "desc",
       },
     });
-
+    console.log(result);
+    // const filteredResult = result.filter((msg) => msg.sender.name === user);
     if (result) {
       const limitedMessages = result.slice(startNumber, endNumber);
       return res.status(200).json(limitedMessages);
@@ -244,7 +245,7 @@ exports.getDraftMessages = async (req, res) => {
     }
     const result = await prisma.messages.findMany({
       where: {
-        sender: user,
+        sender: { path: ["name"], string_contains: user },
         status: "Draft",
         holders: {
           array_contains: user,
@@ -255,6 +256,7 @@ exports.getDraftMessages = async (req, res) => {
       },
     });
 
+    // const filteredResult = result.filter((msg) => msg.sender.name === user);
     if (result) {
       const limitedMessages = result.slice(startNumber, endNumber);
       return res.status(200).json(limitedMessages);
@@ -394,7 +396,7 @@ exports.getTotalRecievedMessages = async (req, res) => {
     const result = await prisma.messages.findMany({
       where: {
         recivers: {
-          array_contains: user,
+          array_contains: [{ name: user }],
         },
         status: "Sent",
         holders: {
@@ -421,7 +423,7 @@ exports.getTotalSentMessages = async (req, res) => {
     const user = req.params.user;
     const result = await prisma.messages.findMany({
       where: {
-        sender: user,
+        sender: { path: ["name"], string_contains: user },
         status: "Sent",
         holders: {
           array_contains: user,
@@ -431,6 +433,8 @@ exports.getTotalSentMessages = async (req, res) => {
         date: "desc",
       },
     });
+
+    // const filteredResult = result.filter((msg) => msg.sender.name === user);
 
     if (result) {
       return res.status(200).json({ total: result.length });
@@ -447,7 +451,7 @@ exports.getTotalDraftMessages = async (req, res) => {
     const user = req.params.user;
     const result = await prisma.messages.findMany({
       where: {
-        sender: user,
+        sender: { path: ["name"], string_contains: user },
         status: "Draft",
         holders: {
           array_contains: user,
@@ -457,7 +461,7 @@ exports.getTotalDraftMessages = async (req, res) => {
         date: "desc",
       },
     });
-
+    // const filteredResult = result.filter((msg) => msg.sender.name === user);
     if (result) {
       return res.status(200).json({ total: result.length });
     } else {
