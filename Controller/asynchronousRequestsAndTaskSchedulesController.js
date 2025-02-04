@@ -49,40 +49,50 @@ exports.getTaskSchedule = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-exports.createAdHocTaskSchedule = async (req, res) => {
-  const data = req.body;
-  console.log(data, "data");
+exports.getViewRequests = async (req, res) => {
   try {
-    const response = await axios.post(
-      `${arm_api_url}/Create_TaskSchedule`,
-      data
-    );
+    const response = await axios.get(`${arm_api_url}/view_requests`);
     return res.status(200).json(response.data);
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({ error: error.message });
   }
 };
-exports.createRunScriptTaskSchedule = async (req, res) => {
+exports.getViewRequestsLazyLoading = async (req, res) => {
+  const { page, limit } = req.params;
+  const { startNumber, endNumber } = pageLimitData(page, limit);
+  try {
+    const response = await axios.get(`${arm_api_url}/view_requests`);
+    const sortedData = response.data.sort(
+      (a, b) => b?.request_id - a?.request_id
+    );
+    const results = sortedData.slice(startNumber, endNumber);
+    return res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.createTaskSchedule = async (req, res) => {
   const data = req.body;
+  console.log(data, "body");
   try {
     const response = await axios.post(
       `${arm_api_url}/Create_TaskSchedule`,
       data
     );
+    // console.log(response.data.error, "res");
     return res.status(200).json(response.data);
   } catch (error) {
+    // console.log(error, "error");
     res.status(500).json({ error: error.message });
   }
 };
 
 exports.updateTaskSchedule = async (req, res) => {
-  const { task_name, schedule_name } = req.params;
+  const { task_name, redbeat_schedule_name } = req.params;
   const data = req.body;
   try {
     const response = await axios.put(
-      `${arm_api_url}/Update_TaskSchedule/${task_name}/${schedule_name}`,
+      `${arm_api_url}/Update_TaskSchedule/${task_name}/${redbeat_schedule_name}`,
       data
     );
     return res.status(200).json(response.data);

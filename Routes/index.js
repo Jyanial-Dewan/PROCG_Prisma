@@ -60,7 +60,6 @@ routes.use(
 routes.use("/controls", controlesRoutes);
 routes.use("/devices", linkedDevicesRoutes);
 routes.use("/arm-tasks", armRoutes);
-routes.use("/arm-task-parameters", armRoutes);
 routes.use(
   "/asynchronous-requests-and-task-schedules",
   asynchronousRequestsAndTaskSchedulesRoutes

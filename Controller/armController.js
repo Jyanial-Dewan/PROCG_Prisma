@@ -1,4 +1,5 @@
 const { default: axios } = require("axios");
+const { user } = require("../Authentication/Authentication");
 const arm_api_url = process.env.ARM_API_URL;
 
 const pageLimitData = (page, limit) => {
@@ -68,11 +69,27 @@ exports.cancelARMTask = async (req, res) => {
 };
 
 // Task Params
-exports.getTaskParams = async (req, res) => {
-  const task_name = req.params.task_name;
+exports.getTaskNameParams = async (req, res) => {
+  const { task_name } = req.params;
   try {
     const response = await axios.get(
       `${arm_api_url}/Show_TaskParams/${task_name}`
+    );
+
+    const sortedData = response.data.sort(
+      (a, b) => b.arm_task_id - a.arm_task_id
+    );
+    return res.status(200).json(sortedData);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+exports.getUserTaskNameParams = async (req, res) => {
+  const { user_task_name } = req.params;
+  console.log(user_task_name, "user_task_name");
+  try {
+    const response = await axios.get(
+      `${arm_api_url}/Show_ParameterName/${user_task_name}`
     );
 
     const sortedData = response.data.sort(
@@ -99,15 +116,15 @@ exports.getTaskParamsLazyLoading = async (req, res) => {
   }
 };
 exports.addTaskParams = async (req, res) => {
-  const task_name = req.params.task_name;
+  const { user_task_name } = req.params;
   const data = req.body;
-
+  console.log(data, user_task_name, "data1111");
   try {
     const response = await axios.post(
-      `${arm_api_url}/Add_TaskParams/${task_name}`,
+      `${arm_api_url}/Add_TaskParams/${user_task_name}`,
       data
     );
-    console.log(response, "res");
+
     return res.status(200).json(response.data);
   } catch (error) {
     return res.status(500).json(error);
