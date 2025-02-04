@@ -129,7 +129,7 @@ model data_sources {
 
 model messages {
   id            String    @id
-  sender        String?
+  sender        Json?
   recivers      Json?
   subject       String?
   body          String?
