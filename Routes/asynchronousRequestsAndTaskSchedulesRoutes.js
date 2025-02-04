@@ -15,16 +15,20 @@ router.get(
   "/:task_name/:arm_param_id",
   asynchronousRequestsAndTaskSchedulesController.getTaskSchedule
 );
-router.post(
-  "/create-ad-hoc-task-schedule",
-  asynchronousRequestsAndTaskSchedulesController.createAdHocTaskSchedule
+router.get(
+  "/view-requests",
+  asynchronousRequestsAndTaskSchedulesController.getViewRequests
+);
+router.get(
+  "/view-requests/:page/:limit",
+  asynchronousRequestsAndTaskSchedulesController.getViewRequestsLazyLoading
 );
 router.post(
-  "/create-run-script-task-schedule",
-  asynchronousRequestsAndTaskSchedulesController.createRunScriptTaskSchedule
+  "/create-task-schedule",
+  asynchronousRequestsAndTaskSchedulesController.createTaskSchedule
 );
 router.put(
-  "/update-task-schedule/:task_name/:schedule_name",
+  "/update-task-schedule/:task_name/:redbeat_schedule_name",
   asynchronousRequestsAndTaskSchedulesController.updateTaskSchedule
 );
 router.put(
