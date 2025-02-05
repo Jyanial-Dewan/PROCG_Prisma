@@ -16,7 +16,10 @@ const pageLimitData = (page, limit) => {
 exports.getTaskSchedules = async (req, res) => {
   try {
     const response = await axios.get(`${arm_api_url}/Show_TaskSchedules`);
-    return res.status(200).json(response.data);
+    const filterData = response.data.filter(
+      (item) => item.user_schedule_name != "ad-hoc"
+    );
+    return res.status(200).json(filterData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -26,8 +29,6 @@ exports.getTaskSchedulesLazyLoading = async (req, res) => {
   const { startNumber, endNumber } = pageLimitData(page, limit);
   try {
     const response = await axios.get(`${arm_api_url}/Show_TaskSchedules`);
-
-    // const results = response.data.slice(startNumber, endNumber);
     const filterData = response.data.filter(
       (item) => item.user_schedule_name != "ad-hoc"
     );
@@ -102,10 +103,12 @@ exports.updateTaskSchedule = async (req, res) => {
 };
 exports.cancelTaskSchedule = async (req, res) => {
   const { task_name, redbeat_schedule_name } = req.params;
+  console.log(task_name, redbeat_schedule_name, "params");
   try {
     const response = await axios.put(
-      `${arm_api_url}/Update_TaskSchedule/${task_name}/${redbeat_schedule_name}`
+      `${arm_api_url}/Cancel_TaskSchedule/${task_name}/${redbeat_schedule_name}`
     );
+    console.log(response, "response");
     return res.status(200).json(response.data);
   } catch (error) {
     res.status(500).json({ error: error.message });

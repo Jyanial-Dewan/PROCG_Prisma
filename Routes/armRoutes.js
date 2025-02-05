@@ -11,7 +11,7 @@ router.put("/edit-task/:task_name", armControllers.editARMTask);
 router.put("/cancel-task/:task_name", armControllers.cancelARMTask);
 
 // Task Params
-router.get("/:user_task_name", armControllers.getUserTaskNameParams);
+router.get("/:task_name", armControllers.getUserTaskNameParams);
 router.get("/:task_name/:page/:limit", armControllers.getTaskParamsLazyLoading);
 router.post("/add-task-params/:user_task_name", armControllers.addTaskParams);
 router.put(

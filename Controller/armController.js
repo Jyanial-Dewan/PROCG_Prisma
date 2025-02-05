@@ -85,11 +85,11 @@ exports.getTaskNameParams = async (req, res) => {
   }
 };
 exports.getUserTaskNameParams = async (req, res) => {
-  const { user_task_name } = req.params;
-  console.log(user_task_name, "user_task_name");
+  const { task_name } = req.params;
+  console.log(task_name, "task_name");
   try {
     const response = await axios.get(
-      `${arm_api_url}/Show_ParameterName/${user_task_name}`
+      `${arm_api_url}/Show_TaskParams/${task_name}`
     );
 
     const sortedData = response.data.sort(
