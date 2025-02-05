@@ -116,12 +116,11 @@ exports.getTaskParamsLazyLoading = async (req, res) => {
   }
 };
 exports.addTaskParams = async (req, res) => {
-  const { user_task_name } = req.params;
+  const { task_name } = req.params;
   const data = req.body;
-  console.log(data, user_task_name, "data1111");
   try {
     const response = await axios.post(
-      `${arm_api_url}/Add_TaskParams/${user_task_name}`,
+      `${arm_api_url}/Add_TaskParams/${task_name}`,
       data
     );
 
