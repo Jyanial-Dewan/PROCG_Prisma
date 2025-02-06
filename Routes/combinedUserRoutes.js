@@ -1,7 +1,7 @@
 const Router = require("express");
 const combinedUrserController = require("../Controller/combinedUserController");
 // upload profile image middleware
-const upload = require("../Middleware/multerUpload");
+const { upload, generateThumbnail } = require("../Middleware/multerUpload");
 const router = Router();
 
 // combined users get with page and limit
@@ -14,6 +14,7 @@ router.post("/", combinedUrserController.createCombinedUser);
 router.put(
   "/:id",
   upload.single("profileImage"),
+  generateThumbnail,
   combinedUrserController.updateUser
 );
 

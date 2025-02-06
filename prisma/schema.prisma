@@ -104,7 +104,7 @@ model def_users {
   last_updated_by             Int?
   last_updated_on             String?
   tenant_id                   Int?
-  profile_picture             String?
+  profile_picture             Json?
   def_user_granted_privileges def_user_granted_privileges[]
   def_user_granted_roles      def_user_granted_roles[]
 }
@@ -292,7 +292,7 @@ model def_users_v {
   last_updated_by Int?
   last_updated_on String?
   tenant_id       Int?
-  profile_picture String?
+  profile_picture Json?
 
   @@map("def_users_v")
 }

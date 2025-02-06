@@ -202,45 +202,50 @@ exports.getUsersWithPageAndLimit = async (req, res) => {
   }
 };
 exports.updateUser = async (req, res) => {
-  const filePath = req.file?.path.replace(/\\/g, "/");
-
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded." });
+    }
+
+    const filePath = req.file.path.replace(/\\/g, "/");
+    const thumbnailPath = req.file.thumbnailPath.replace(/\\/g, "/");
+
     const { user_name, email_addresses, first_name, last_name } = req.body;
     const id = Number(req.params.id);
-    // Validation  START/---------------------------------/
+
+    // Validate user ID
     const findDefUserId = await prisma.def_users.findUnique({
-      where: {
-        user_id: id,
-      },
+      where: { user_id: id },
     });
-    if (!findDefUserId)
-      return res.status(404).json({ message: "User Id not found." });
 
-    // Validation  End/---------------------------------/
+    if (!findDefUserId) {
+      return res.status(404).json({ message: "User ID not found." });
+    }
+
+    // Update user with profile picture and thumbnail
     await prisma.def_users.update({
-      where: {
-        user_id: id,
-      },
+      where: { user_id: id },
       data: {
-        user_name: user_name ? user_name : findDefUserId.user_name,
-        email_addresses: email_addresses
-          ? email_addresses
-          : findDefUserId.email_addresses,
-        profile_picture: filePath ? filePath : findDefUserId.profile_picture,
-      },
-    });
-    await prisma.def_persons.update({
-      where: {
-        user_id: id,
-      },
-      data: {
-        first_name: first_name ? first_name : findDefUserId.first_name,
-        last_name: last_name ? last_name : findDefUserId.last_name,
+        user_name: user_name || findDefUserId.user_name,
+        email_addresses: email_addresses || findDefUserId.email_addresses,
+        profile_picture: {
+          original: filePath || findDefUserId.profile_picture,
+          thumbnail: thumbnailPath || findDefUserId.profile_thumbnail,
+        },
       },
     });
 
-    return res.status(200).json({ message: "Updated successfully ." });
+    await prisma.def_persons.update({
+      where: { user_id: id },
+      data: {
+        first_name: first_name || findDefUserId.first_name,
+        last_name: last_name || findDefUserId.last_name,
+      },
+    });
+
+    return res.status(200).json({ message: "Updated successfully." });
   } catch (error) {
+    console.error("Error updating user:", error);
     return res.status(500).json({ error: error.message });
   }
 };
