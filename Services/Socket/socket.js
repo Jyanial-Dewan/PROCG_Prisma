@@ -13,7 +13,7 @@ const socket = (io) => {
     if (channel === "NOTIFICATION-MESSAGES") {
       const newMessage = JSON.parse(message);
       newMessage.recivers.forEach((reciver) => {
-        io.to(reciver).emit("receivedMessage", newMessage);
+        io.to(reciver.name).emit("receivedMessage", newMessage);
       });
     }
   });
@@ -58,7 +58,7 @@ const socket = (io) => {
           JSON.stringify({ id, sender, subject, date, parentid, recivers })
         );
 
-        io.to(sender).emit("sentMessage", {
+        io.to(sender.name).emit("sentMessage", {
           id,
           sender,
           recivers,
@@ -75,9 +75,38 @@ const socket = (io) => {
       }
     );
 
-    socket.on("sendDraft", (data) => {
-      io.to(data.sender).emit("draftMessage", data);
-    });
+    socket.on(
+      "sendDraft",
+      ({
+        id,
+        sender,
+        recivers,
+        subject,
+        body,
+        date,
+        status,
+        parentid,
+        involvedusers,
+        readers,
+        holders,
+        recyclebin,
+      }) => {
+        io.to(sender.name).emit("draftMessage", {
+          id,
+          sender,
+          recivers,
+          subject,
+          body,
+          date,
+          status,
+          parentid,
+          involvedusers,
+          readers,
+          holders,
+          recyclebin,
+        });
+      }
+    );
 
     socket.on("draftMsgId", ({ id, user }) => {
       io.to(user).emit("draftMessageId", id);
