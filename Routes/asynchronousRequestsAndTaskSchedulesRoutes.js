@@ -32,7 +32,7 @@ router.put(
   asynchronousRequestsAndTaskSchedulesController.updateTaskSchedule
 );
 router.put(
-  "cancel-task-schedule/:task_name/:redbeat_schedule_name",
+  "/cancel-task-schedule/:task_name/:redbeat_schedule_name",
   asynchronousRequestsAndTaskSchedulesController.cancelTaskSchedule
 );
 module.exports = router;
