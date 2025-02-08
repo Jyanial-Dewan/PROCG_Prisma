@@ -112,7 +112,7 @@ const socket = (io) => {
       io.to(user).emit("draftMessageId", id);
     });
 
-    socket.on("read", async ({ id, user }) => {
+    socket.on("read", ({ id, user }) => {
       io.to(user).emit("sync", id);
     });
 
