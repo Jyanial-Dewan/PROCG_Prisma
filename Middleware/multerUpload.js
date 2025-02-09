@@ -47,7 +47,9 @@ const storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
-    cb(null, "profile.jpg"); // Save main image as profile.jpg
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext).replace(/\s+/g, "-"); // Replace spaces with "-"
+    cb(null, `${baseName}${ext}`);
   },
 });
 
@@ -64,7 +66,7 @@ const upload = multer({
   },
 });
 
-// Middleware to generate a thumbnail after upload
+// Middleware to generate a compressed thumbnail
 const generateThumbnail = async (req, res, next) => {
   if (!req.file) return next();
 
@@ -73,11 +75,31 @@ const generateThumbnail = async (req, res, next) => {
       UPLOAD_FOLDER,
       req.user.user_name.toLowerCase()
     );
-    const filePath = path.join(userFolder, "profile.jpg");
+    const filePath = path.join(userFolder, req.file.filename);
     const thumbnailPath = path.join(userFolder, "thumbnail.jpg");
 
-    // Generate a 40x40 thumbnail using sharp
-    await sharp(filePath).resize(40, 40).toFile(thumbnailPath);
+    // Ensure user folder exists
+    if (!fs.existsSync(userFolder)) {
+      fs.mkdirSync(userFolder, { recursive: true });
+    }
+
+    let quality = 80; // Start with high quality
+    let buffer = await sharp(filePath)
+      .resize({ withoutEnlargement: true }) // Keep original size
+      .jpeg({ quality }) // Initial compression
+      .toBuffer();
+
+    // Reduce quality step-by-step until the size is ≤ 10KB
+    while (buffer.length > 10 * 1024 && quality > 10) {
+      quality -= 5;
+      buffer = await sharp(filePath)
+        .resize({ withoutEnlargement: true })
+        .jpeg({ quality })
+        .toBuffer();
+    }
+
+    // Save compressed thumbnail
+    await sharp(buffer).toFile(thumbnailPath);
 
     req.file.thumbnailPath = thumbnailPath.replace(/\\/g, "/"); // Store thumbnail path
     next();
