@@ -64,5 +64,9 @@ routes.use(
   "/asynchronous-requests-and-task-schedules",
   asynchronousRequestsAndTaskSchedulesRoutes
 );
+routes.use(
+  "/api/v1/asynchronous-requests-and-task-schedules",
+  asynchronousRequestsAndTaskSchedulesRoutes
+);
 
 module.exports = routes;

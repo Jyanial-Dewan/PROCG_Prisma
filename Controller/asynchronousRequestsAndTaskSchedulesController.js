@@ -16,10 +16,8 @@ const pageLimitData = (page, limit) => {
 exports.getTaskSchedules = async (req, res) => {
   try {
     const response = await axios.get(`${arm_api_url}/Show_TaskSchedules`);
-    const filterData = response.data.filter(
-      (item) => item.user_schedule_name != "ad-hoc"
-    );
-    return res.status(200).json(filterData);
+
+    return res.status(200).json(response.data);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -29,10 +27,8 @@ exports.getTaskSchedulesLazyLoading = async (req, res) => {
   const { startNumber, endNumber } = pageLimitData(page, limit);
   try {
     const response = await axios.get(`${arm_api_url}/Show_TaskSchedules`);
-    const filterData = response.data.filter(
-      (item) => item.user_schedule_name != "ad-hoc"
-    );
-    const results = filterData.slice(startNumber, endNumber);
+
+    const results = response.data.slice(startNumber, endNumber);
     return res.status(200).json(results);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -108,9 +104,41 @@ exports.cancelTaskSchedule = async (req, res) => {
     const response = await axios.put(
       `${arm_api_url}/Cancel_TaskSchedule/${task_name}/${redbeat_schedule_name}`
     );
-    console.log(response, "response");
+
     return res.status(200).json(response.data);
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// V1 API
+exports.getTaskSchedulesLazyLoadingV1 = async (req, res) => {
+  const { page, limit } = req.params;
+  const { startNumber, endNumber } = pageLimitData(page, limit);
+  try {
+    const response = await axios.get(
+      `${arm_api_url}/api/v1/Show_TaskSchedules`
+    );
+
+    const results = response.data.slice(startNumber, endNumber);
+    return res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createTaskScheduleV1 = async (req, res) => {
+  const data = req.body;
+  console.log(data, "body");
+  try {
+    const response = await axios.post(
+      `${arm_api_url}/api/v1/Create_TaskSchedule`,
+      data
+    );
+    // console.log(response.data.error, "res");
+    return res.status(200).json(response.data);
+  } catch (error) {
+    // console.log(error, "error");
     res.status(500).json({ error: error.message });
   }
 };
