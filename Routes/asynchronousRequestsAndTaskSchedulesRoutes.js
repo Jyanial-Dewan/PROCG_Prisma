@@ -35,4 +35,14 @@ router.put(
   "/cancel-task-schedule/:task_name/:redbeat_schedule_name",
   asynchronousRequestsAndTaskSchedulesController.cancelTaskSchedule
 );
+
+//V1 API
+router.get(
+  "/task-schedules/:page/:limit",
+  asynchronousRequestsAndTaskSchedulesController.getTaskSchedulesLazyLoadingV1
+);
+router.post(
+  "/create-task-schedule-v1",
+  asynchronousRequestsAndTaskSchedulesController.createTaskScheduleV1
+);
 module.exports = router;
