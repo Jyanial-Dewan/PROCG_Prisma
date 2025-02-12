@@ -112,6 +112,17 @@ exports.cancelTaskSchedule = async (req, res) => {
 };
 
 // V1 API
+exports.getTaskSchedulesV1 = async (req, res) => {
+  try {
+    const response = await axios.get(
+      `${arm_api_url}/api/v1/Show_TaskSchedules`
+    );
+
+    return res.status(200).json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 exports.getTaskSchedulesLazyLoadingV1 = async (req, res) => {
   const { page, limit } = req.params;
   const { startNumber, endNumber } = pageLimitData(page, limit);
@@ -139,6 +150,32 @@ exports.createTaskScheduleV1 = async (req, res) => {
     return res.status(200).json(response.data);
   } catch (error) {
     // console.log(error, "error");
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.updateTaskScheduleV1 = async (req, res) => {
+  const { task_name, redbeat_schedule_name } = req.params;
+  const data = req.body;
+  try {
+    const response = await axios.put(
+      `${arm_api_url}/api/v1/Update_TaskSchedule/${task_name}/${redbeat_schedule_name}`,
+      data
+    );
+    return res.status(200).json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.cancelTaskScheduleV1 = async (req, res) => {
+  const { task_name, redbeat_schedule_name } = req.params;
+  console.log(task_name, redbeat_schedule_name, "params");
+  try {
+    const response = await axios.put(
+      `${arm_api_url}/api/v1/Cancel_TaskSchedule/${task_name}/${redbeat_schedule_name}`
+    );
+
+    return res.status(200).json(response.data);
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
