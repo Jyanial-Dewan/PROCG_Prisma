@@ -118,7 +118,10 @@ exports.getTaskSchedulesV1 = async (req, res) => {
       `${arm_api_url}/api/v1/Show_TaskSchedules`
     );
 
-    return res.status(200).json(response.data);
+    const sortedData = response.data.sort(
+      (a, b) => b?.arm_task_sche_id - a?.arm_task_sche_id
+    )
+    return res.status(200).json(sortedData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -130,8 +133,11 @@ exports.getTaskSchedulesLazyLoadingV1 = async (req, res) => {
     const response = await axios.get(
       `${arm_api_url}/api/v1/Show_TaskSchedules`
     );
+    const sortedData = response.data.sort(
+      (a, b) => b?.arm_task_sche_id - a?.arm_task_sche_id
+    )
 
-    const results = response.data.slice(startNumber, endNumber);
+    const results = sortedData.slice(startNumber, endNumber);
     return res.status(200).json(results);
   } catch (error) {
     res.status(500).json({ error: error.message });
