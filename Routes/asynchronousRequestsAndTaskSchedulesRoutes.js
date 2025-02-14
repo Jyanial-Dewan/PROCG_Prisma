@@ -50,11 +50,11 @@ router.post(
   asynchronousRequestsAndTaskSchedulesController.createTaskScheduleV1
 );
 router.put(
-  "/update-task-schedule-v1/:task_name/:redbeat_schedule_name",
+  "/update-task-schedule-v1/:task_name",
   asynchronousRequestsAndTaskSchedulesController.updateTaskScheduleV1
 );
 router.put(
-  "/cancel-task-schedule-v1/:task_name/:redbeat_schedule_name",
+  "/cancel-task-schedule-v1/:task_name",
   asynchronousRequestsAndTaskSchedulesController.cancelTaskScheduleV1
 );
 module.exports = router;

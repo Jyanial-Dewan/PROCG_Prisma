@@ -160,11 +160,11 @@ exports.createTaskScheduleV1 = async (req, res) => {
   }
 };
 exports.updateTaskScheduleV1 = async (req, res) => {
-  const { task_name, redbeat_schedule_name } = req.params;
+  const { task_name } = req.params;
   const data = req.body;
   try {
     const response = await axios.put(
-      `${arm_api_url}/api/v1/Update_TaskSchedule/${task_name}/${redbeat_schedule_name}`,
+      `${arm_api_url}/api/v1/Update_TaskSchedule/${task_name}`,
       data
     );
     return res.status(200).json(response.data);
@@ -173,11 +173,11 @@ exports.updateTaskScheduleV1 = async (req, res) => {
   }
 };
 exports.cancelTaskScheduleV1 = async (req, res) => {
-  const { task_name, redbeat_schedule_name } = req.params;
-  console.log(task_name, redbeat_schedule_name, "params");
+  const { task_name } = req.params;
+  const data = req.body;
   try {
     const response = await axios.put(
-      `${arm_api_url}/api/v1/Cancel_TaskSchedule/${task_name}/${redbeat_schedule_name}`
+      `${arm_api_url}/api/v1/Cancel_TaskSchedule/${task_name}`,data
     );
 
     return res.status(200).json(response.data);
