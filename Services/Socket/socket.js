@@ -1,6 +1,7 @@
 const { Redis } = require("ioredis");
 
 let users = {};
+console.log(users);
 const url = process.env.VALKEY_URI;
 
 const pub = new Redis(url);
