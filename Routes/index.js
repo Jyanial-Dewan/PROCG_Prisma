@@ -26,8 +26,10 @@ const controlesRoutes = require("./controlsRoutes");
 const linkedDevicesRoutes = require("./linkedDevicesRoutes");
 const armRoutes = require("./armRoutes");
 const asynchronousRequestsAndTaskSchedulesRoutes = require("./asynchronousRequestsAndTaskSchedulesRoutes");
+const pushNotificationRoutes = require("./pushNotificationRoutes");
 
 routes.use(cookieParser());
+routes.use("/push-notification", pushNotificationRoutes);
 routes.use("/login", authentication);
 routes.use("/logout", authentication);
 routes.use(verifyUser);
