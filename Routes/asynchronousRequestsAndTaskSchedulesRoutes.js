@@ -38,11 +38,23 @@ router.put(
 
 //V1 API
 router.get(
+  "/task-schedules",
+  asynchronousRequestsAndTaskSchedulesController.getTaskSchedulesV1
+);
+router.get(
   "/task-schedules/:page/:limit",
   asynchronousRequestsAndTaskSchedulesController.getTaskSchedulesLazyLoadingV1
 );
 router.post(
   "/create-task-schedule-v1",
   asynchronousRequestsAndTaskSchedulesController.createTaskScheduleV1
+);
+router.put(
+  "/update-task-schedule-v1/:task_name",
+  asynchronousRequestsAndTaskSchedulesController.updateTaskScheduleV1
+);
+router.put(
+  "/cancel-task-schedule-v1/:task_name",
+  asynchronousRequestsAndTaskSchedulesController.cancelTaskScheduleV1
 );
 module.exports = router;

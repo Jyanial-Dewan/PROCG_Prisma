@@ -86,7 +86,6 @@ exports.getTaskNameParams = async (req, res) => {
 };
 exports.getUserTaskNameParams = async (req, res) => {
   const { task_name } = req.params;
-  console.log(task_name, "task_name");
   try {
     const response = await axios.get(
       `${arm_api_url}/Show_TaskParams/${task_name}`
@@ -148,6 +147,54 @@ exports.deleteTaskParams = async (req, res) => {
   try {
     const response = await axios.put(
       `${arm_api_url}/Delete_TaskParams/${task_name}/${arm_param_id}`,
+      data
+    );
+    return res.status(200).json(response.data);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+exports.showExecutionMethods = async (req, res) => { 
+  try {
+    const response = await axios.get(
+      `${arm_api_url}/Show_ExecutionMethods` 
+    );
+    return res.status(200).json(response.data);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+exports.showExecutionMethodsLazyLoading = async (req, res) => {
+  const { page, limit } = req.params; 
+  const { startNumber, endNumber } = pageLimitData(page, limit);
+  try {
+    const response = await axios.get(
+      `${arm_api_url}/Show_ExecutionMethods` 
+    );
+    const results = response.data.slice(startNumber, endNumber);
+    return res.status(200).json(results);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+}
+exports.createExecutionMethod = async (req, res) => { 
+  const  data  = req.body;
+  try {
+    const response = await axios.post(
+      `${arm_api_url}/Create_ExecutionMethod`,
+      data
+    );
+    return res.status(200).json(response.data);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+exports.updateExecutionMethod = async (req, res) => { 
+  const {internal_execution_method}= req.params;
+  const data = req.body;
+  try {
+    const response = await axios.put(
+      `${arm_api_url}/Update_ExecutionMethod/${internal_execution_method}`,
       data
     );
     return res.status(200).json(response.data);

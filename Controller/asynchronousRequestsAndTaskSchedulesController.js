@@ -112,6 +112,20 @@ exports.cancelTaskSchedule = async (req, res) => {
 };
 
 // V1 API
+exports.getTaskSchedulesV1 = async (req, res) => {
+  try {
+    const response = await axios.get(
+      `${arm_api_url}/api/v1/Show_TaskSchedules`
+    );
+
+    const sortedData = response.data.sort(
+      (a, b) => b?.arm_task_sche_id - a?.arm_task_sche_id
+    )
+    return res.status(200).json(sortedData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 exports.getTaskSchedulesLazyLoadingV1 = async (req, res) => {
   const { page, limit } = req.params;
   const { startNumber, endNumber } = pageLimitData(page, limit);
@@ -119,8 +133,11 @@ exports.getTaskSchedulesLazyLoadingV1 = async (req, res) => {
     const response = await axios.get(
       `${arm_api_url}/api/v1/Show_TaskSchedules`
     );
+    const sortedData = response.data.sort(
+      (a, b) => b?.arm_task_sche_id - a?.arm_task_sche_id
+    )
 
-    const results = response.data.slice(startNumber, endNumber);
+    const results = sortedData.slice(startNumber, endNumber);
     return res.status(200).json(results);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -139,6 +156,32 @@ exports.createTaskScheduleV1 = async (req, res) => {
     return res.status(200).json(response.data);
   } catch (error) {
     // console.log(error, "error");
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.updateTaskScheduleV1 = async (req, res) => {
+  const { task_name } = req.params;
+  const data = req.body;
+  try {
+    const response = await axios.put(
+      `${arm_api_url}/api/v1/Update_TaskSchedule/${task_name}`,
+      data
+    );
+    return res.status(200).json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.cancelTaskScheduleV1 = async (req, res) => {
+  const { task_name } = req.params;
+  const data = req.body;
+  try {
+    const response = await axios.put(
+      `${arm_api_url}/api/v1/Cancel_TaskSchedule/${task_name}`,data
+    );
+
+    return res.status(200).json(response.data);
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
