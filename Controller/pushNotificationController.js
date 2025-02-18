@@ -33,6 +33,30 @@ exports.registerToken = (req, res) => {
   res.send("Token registered successfully");
 };
 
+// Unregister device tokens
+exports.unregisterToken = (req, res) => {
+  const { token, username } = req.body;
+
+  if (!username || !token) {
+    return res.status(400).send("Username and token are required");
+  }
+
+  // Check if the user and token exist
+  if (userTokens[username] && userTokens[username].has(token)) {
+    userTokens[username].delete(token);
+    console.log(`Unregistered token: ${token} for user: ${username}`);
+
+    // If no more tokens are registered for the user, clean up the entry
+    if (userTokens[username].size === 0) {
+      delete userTokens[username];
+    }
+
+    res.send("Token unregistered successfully");
+  } else {
+    res.status(404).send("Token or username not found");
+  }
+};
+
 //To send notification to every individual fcm token
 exports.sendNotification = async (req, res) => {
   const { sender, recivers, subject, body } = req.body;
