@@ -1,4 +1,3 @@
-// asynchronousRequestsAndTaskSchedulesController.js;
 const axios = require("axios");
 const arm_api_url = process.env.ARM_API_URL;
 const pageLimitData = (page, limit) => {
@@ -70,7 +69,6 @@ exports.getViewRequestsLazyLoading = async (req, res) => {
 };
 exports.createTaskSchedule = async (req, res) => {
   const data = req.body;
-  console.log(data, "body");
   try {
     const response = await axios.post(
       `${arm_api_url}/Create_TaskSchedule`,
@@ -120,7 +118,7 @@ exports.getTaskSchedulesV1 = async (req, res) => {
 
     const sortedData = response.data.sort(
       (a, b) => b?.arm_task_sche_id - a?.arm_task_sche_id
-    )
+    );
     return res.status(200).json(sortedData);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -135,7 +133,7 @@ exports.getTaskSchedulesLazyLoadingV1 = async (req, res) => {
     );
     const sortedData = response.data.sort(
       (a, b) => b?.arm_task_sche_id - a?.arm_task_sche_id
-    )
+    );
 
     const results = sortedData.slice(startNumber, endNumber);
     return res.status(200).json(results);
@@ -146,16 +144,14 @@ exports.getTaskSchedulesLazyLoadingV1 = async (req, res) => {
 
 exports.createTaskScheduleV1 = async (req, res) => {
   const data = req.body;
-  console.log(data, "body");
   try {
     const response = await axios.post(
       `${arm_api_url}/api/v1/Create_TaskSchedule`,
       data
     );
-    // console.log(response.data.error, "res");
+    console.log(response.data, "res");
     return res.status(200).json(response.data);
   } catch (error) {
-    // console.log(error, "error");
     res.status(500).json({ error: error.message });
   }
 };
@@ -177,9 +173,9 @@ exports.cancelTaskScheduleV1 = async (req, res) => {
   const data = req.body;
   try {
     const response = await axios.put(
-      `${arm_api_url}/api/v1/Cancel_TaskSchedule/${task_name}`,data
+      `${arm_api_url}/api/v1/Cancel_TaskSchedule/${task_name}`,
+      data
     );
-
     return res.status(200).json(response.data);
   } catch (error) {
     res.status(500).json({ error: error.message });
