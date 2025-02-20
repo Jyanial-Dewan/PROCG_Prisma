@@ -26,8 +26,10 @@ exports.getTaskSchedulesLazyLoading = async (req, res) => {
   const { startNumber, endNumber } = pageLimitData(page, limit);
   try {
     const response = await axios.get(`${arm_api_url}/Show_TaskSchedules`);
-
-    const results = response.data.slice(startNumber, endNumber);
+    const sortedData = response.data.sort(
+      (a, b) => new Date(b?.creation_date) - new Date(a?.creation_date)
+    );
+    const results = sortedData.slice(startNumber, endNumber);
     return res.status(200).json(results);
   } catch (error) {
     res.status(500).json({ error: error.message });
