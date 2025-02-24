@@ -279,6 +279,12 @@ model linked_devices {
   location        String?
 }
 
+model def_processes {
+  process_id        Int    @id
+  process_name      String
+  process_structure Json?
+}
+
 model def_users_v {
   user_id         Int     @id
   user_name       String?

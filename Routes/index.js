@@ -27,6 +27,7 @@ const linkedDevicesRoutes = require("./linkedDevicesRoutes");
 const armRoutes = require("./armRoutes");
 const asynchronousRequestsAndTaskSchedulesRoutes = require("./asynchronousRequestsAndTaskSchedulesRoutes");
 const pushNotificationRoutes = require("./pushNotificationRoutes");
+const orchestrationStudioRoutes = require("./orchestrationStudioRoutes");
 
 routes.use(cookieParser());
 routes.use("/push-notification", pushNotificationRoutes);
@@ -70,5 +71,5 @@ routes.use(
   "/api/v1/asynchronous-requests-and-task-schedules",
   asynchronousRequestsAndTaskSchedulesRoutes
 );
-
+routes.use("/orchestration-studio-process", orchestrationStudioRoutes);
 module.exports = routes;
