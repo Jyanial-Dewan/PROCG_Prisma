@@ -8,7 +8,7 @@ exports.getDefProcesses = async (req, res) => {
         process_id: "desc",
       },
     });
-    // console.log(response, "response");
+    console.log(response, "response");
     return res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -22,7 +22,7 @@ exports.getDefProcess = async (req, res) => {
         process_name,
       },
     });
-    // console.log(response, "response");
+    console.log(response, "response");
     return res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
