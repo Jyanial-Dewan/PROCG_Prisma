@@ -54,3 +54,31 @@ exports.updateDefProcess = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.updateDefProcessName = async (req, res) => {
+  try {
+    const { process_id } = req.params;
+    const { process_name } = req.body;
+    await prisma.def_processes.update({
+      where: { process_id: Number(process_id) },
+      data: { process_name },
+    });
+    return res
+      .status(200)
+      .json({ message: "Process name updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.deleteDefProcess = async (req, res) => {
+  try {
+    const { process_id } = req.params;
+    await prisma.def_processes.delete({
+      where: { process_id: Number(process_id) },
+    });
+    return res.status(200).json({ message: "Process deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
