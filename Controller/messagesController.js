@@ -135,7 +135,7 @@ exports.getRecievedMessages = async (req, res) => {
   try {
     const { user, page } = req.params;
     const pageNumber = parseInt(page);
-    const limit = 5;
+    const limit = 50;
     let startNumber = 0;
     const endNumber = pageNumber * limit;
     if (pageNumber > 1) {
@@ -200,7 +200,7 @@ exports.getSentMessages = async (req, res) => {
   try {
     const { user, page } = req.params;
     const pageNumber = parseInt(page);
-    const limit = 5;
+    const limit = 50;
     let startNumber = 0;
     const endNumber = pageNumber * limit;
     if (pageNumber > 1) {
@@ -219,7 +219,7 @@ exports.getSentMessages = async (req, res) => {
         date: "desc",
       },
     });
-    console.log(result);
+
     // const filteredResult = result.filter((msg) => msg.sender.name === user);
     if (result) {
       const limitedMessages = result.slice(startNumber, endNumber);
@@ -236,7 +236,7 @@ exports.getDraftMessages = async (req, res) => {
   try {
     const { user, page } = req.params;
     const pageNumber = parseInt(page);
-    const limit = 5;
+    const limit = 50;
     let startNumber = 0;
     const endNumber = pageNumber * limit;
     if (pageNumber > 1) {
@@ -272,7 +272,7 @@ exports.getRecycleBinMessages = async (req, res) => {
   try {
     const { user, page } = req.params;
     const pageNumber = parseInt(page);
-    const limit = 5;
+    const limit = 50;
     let startNumber = 0;
     const endNumber = pageNumber * limit;
     if (pageNumber > 1) {
