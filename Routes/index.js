@@ -28,6 +28,7 @@ const armRoutes = require("./armRoutes");
 const asynchronousRequestsAndTaskSchedulesRoutes = require("./asynchronousRequestsAndTaskSchedulesRoutes");
 const pushNotificationRoutes = require("./pushNotificationRoutes");
 const orchestrationStudioRoutes = require("./orchestrationStudioRoutes");
+const accessProfileRoutes = require("./accessProfileRoutes");
 
 routes.use(cookieParser());
 routes.use("/push-notification", pushNotificationRoutes);
@@ -72,4 +73,6 @@ routes.use(
   asynchronousRequestsAndTaskSchedulesRoutes
 );
 routes.use("/orchestration-studio-process", orchestrationStudioRoutes);
+routes.use("/access-profiles", accessProfileRoutes);
+
 module.exports = routes;
