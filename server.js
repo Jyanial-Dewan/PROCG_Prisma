@@ -6,7 +6,9 @@ require("dotenv").config();
 const path = require("path");
 const app = express();
 const multer = require("multer");
-const { json } = require("stream/consumers");
+
+// const dotenv = require("dotenv");
+// dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const PORT = process.env.PORT;
 const server = http.createServer(app);

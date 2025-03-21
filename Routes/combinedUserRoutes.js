@@ -1,25 +1,25 @@
 const Router = require("express");
-const combinedUrserController = require("../Controller/combinedUserController");
+const combinedUserController = require("../Controller/combinedUserController");
 // upload profile image middleware
 const { upload, generateThumbnail } = require("../Middleware/multerUpload");
 const router = Router();
 
 // combined users get with page and limit
-router.get("/:page/:limit", combinedUrserController.getUsersWithPageAndLimit);
+router.get("/:page/:limit", combinedUserController.getUsersWithPageAndLimit);
 // combined users get without page and limit
-router.get("/", combinedUrserController.getUsersView);
-router.get("/:id", combinedUrserController.getUser);
-router.post("/", combinedUrserController.createCombinedUser);
+router.get("/", combinedUserController.getUsersView);
+router.get("/:id", combinedUserController.getUser);
+router.post("/", combinedUserController.createCombinedUser);
 
 router.put(
   "/:id",
   upload.single("profileImage"),
   generateThumbnail,
-  combinedUrserController.updateUser
+  combinedUserController.updateUser
 );
 
 //Flask API Wrapper
-router.get("/v2", combinedUrserController.getFlaskCombinedUser);
-router.post("/v2", combinedUrserController.createFlaskCombinedUser);
+router.get("/v2", combinedUserController.getFlaskCombinedUser);
+router.post("/v2", combinedUserController.createFlaskCombinedUser);
 
 module.exports = router;
