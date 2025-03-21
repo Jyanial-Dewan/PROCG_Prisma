@@ -204,17 +204,43 @@ exports.getUsersWithPageAndLimit = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
 exports.updateUser = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded." });
-    }
-
-    const filePath = req.file.path.replace(/\\/g, "/");
-    const thumbnailPath = req.file.thumbnailPath.replace(/\\/g, "/");
-
-    const { user_name, email_addresses, first_name, last_name } = req.body;
+    const {
+      user_name,
+      email_addresses,
+      first_name,
+      middle_name,
+      last_name,
+      job_title,
+      password,
+    } = req.body;
     const id = Number(req.params.id);
+    const hashPassword = (password) => {
+      return new Promise((resolve, reject) => {
+        const salt = crypto.randomBytes(8).toString("hex");
+        const iterations = 600000;
+        const keyLength = 32;
+        const digest = "sha256";
+
+        crypto.pbkdf2(
+          password,
+          salt,
+          iterations,
+          keyLength,
+          digest,
+          (err, derivedKey) => {
+            if (err) return reject(err);
+
+            const formattedHash = `pbkdf2:${digest}:${iterations}$${salt}$${derivedKey.toString(
+              "hex"
+            )}`;
+            resolve(formattedHash);
+          }
+        );
+      });
+    };
 
     // Validate user ID
     const findDefUserId = await prisma.def_users.findUnique({
@@ -231,10 +257,6 @@ exports.updateUser = async (req, res) => {
       data: {
         user_name: user_name || findDefUserId.user_name,
         email_addresses: email_addresses || findDefUserId.email_addresses,
-        profile_picture: {
-          original: filePath || findDefUserId.profile_picture,
-          thumbnail: thumbnailPath || findDefUserId.profile_thumbnail,
-        },
       },
     });
 
@@ -242,16 +264,75 @@ exports.updateUser = async (req, res) => {
       where: { user_id: id },
       data: {
         first_name: first_name || findDefUserId.first_name,
+        middle_name: middle_name || findDefUserId.middle_name,
         last_name: last_name || findDefUserId.last_name,
+        job_title: job_title || findDefUserId.job_title,
       },
     });
 
+    if (password.length > 0) {
+      await prisma.def_user_credentials.update({
+        where: { user_id: id },
+        data: {
+          password: await hashPassword(password),
+        },
+      });
+    }
     return res.status(200).json({ message: "Updated successfully." });
   } catch (error) {
     console.error("Error updating user:", error);
     return res.status(500).json({ error: error.message });
   }
 };
+
+// exports.updateUser = async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({ message: "No file uploaded." });
+//     }
+
+//     const filePath = req.file.path.replace(/\\/g, "/");
+//     const thumbnailPath = req.file.thumbnailPath.replace(/\\/g, "/");
+
+//     const { user_name, email_addresses, first_name, last_name } = req.body;
+//     const id = Number(req.params.id);
+
+//     // Validate user ID
+//     const findDefUserId = await prisma.def_users.findUnique({
+//       where: { user_id: id },
+//     });
+
+//     if (!findDefUserId) {
+//       return res.status(404).json({ message: "User ID not found." });
+//     }
+
+//     // Update user with profile picture and thumbnail
+//     await prisma.def_users.update({
+//       where: { user_id: id },
+//       data: {
+//         user_name: user_name || findDefUserId.user_name,
+//         email_addresses: email_addresses || findDefUserId.email_addresses,
+//         profile_picture: {
+//           original: filePath || findDefUserId.profile_picture,
+//           thumbnail: thumbnailPath || findDefUserId.profile_thumbnail,
+//         },
+//       },
+//     });
+
+//     await prisma.def_persons.update({
+//       where: { user_id: id },
+//       data: {
+//         first_name: first_name || findDefUserId.first_name,
+//         last_name: last_name || findDefUserId.last_name,
+//       },
+//     });
+
+//     return res.status(200).json({ message: "Updated successfully." });
+//   } catch (error) {
+//     console.error("Error updating user:", error);
+//     return res.status(500).json({ error: error.message });
+//   }
+// };
 
 //Flask API Wrapper
 

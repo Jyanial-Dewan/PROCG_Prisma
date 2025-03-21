@@ -2,8 +2,6 @@ const prisma = require("../DB/db.config");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const dotenv = require("dotenv");
-const axios = require("axios");
-const { profile } = require("console");
 
 dotenv.config();
 
@@ -11,7 +9,6 @@ const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN;
 const JWT_SECRET_REFRESH_TOKEN = process.env.JWT_SECRET_REFRESH_TOKEN;
 const ACCESS_TOKEN_EXPIRED_TIME = process.env.ACCESS_TOKEN_EXPIRED_TIME;
 const REFRESH_TOKEN_EXPIRED_TIME = process.env.REFRESH_TOKEN_EXPIRED_TIME;
-const IP_INFO_URL = process.env.IP_INFO_URL;
 
 //Generate access token and refresh token
 const generateAccessTokenAndRefreshToken = (props) => {
