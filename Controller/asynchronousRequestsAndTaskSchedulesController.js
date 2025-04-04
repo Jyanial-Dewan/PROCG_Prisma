@@ -1,5 +1,5 @@
 const axios = require("axios");
-const arm_api_url = process.env.ARM_API_URL;
+const FLASK_ENDPOINT_URL = process.env.FLASK_ENDPOINT_URL;
 const pageLimitData = (page, limit) => {
   const pageNumber = parseInt(page);
   const limitNumber = parseInt(limit);
@@ -14,7 +14,9 @@ const pageLimitData = (page, limit) => {
 
 exports.getTaskSchedules = async (req, res) => {
   try {
-    const response = await axios.get(`${arm_api_url}/Show_TaskSchedules`);
+    const response = await axios.get(
+      `${FLASK_ENDPOINT_URL}/Show_TaskSchedules`
+    );
 
     return res.status(200).json(response.data);
   } catch (error) {
@@ -25,7 +27,9 @@ exports.getTaskSchedulesLazyLoading = async (req, res) => {
   const { page, limit } = req.params;
   const { startNumber, endNumber } = pageLimitData(page, limit);
   try {
-    const response = await axios.get(`${arm_api_url}/Show_TaskSchedules`);
+    const response = await axios.get(
+      `${FLASK_ENDPOINT_URL}/Show_TaskSchedules`
+    );
     const sortedData = response.data.sort(
       (a, b) => new Date(b?.creation_date) - new Date(a?.creation_date)
     );
@@ -40,7 +44,7 @@ exports.getTaskSchedule = async (req, res) => {
   const { task_name, arm_param_id } = req.params;
   try {
     const response = await axios.get(
-      `${arm_api_url}/Show_TaskSchedule/${task_name}/${arm_param_id}`
+      `${FLASK_ENDPOINT_URL}/Show_TaskSchedule/${task_name}/${arm_param_id}`
     );
     return res.status(200).json(response.data);
   } catch (error) {
@@ -49,8 +53,14 @@ exports.getTaskSchedule = async (req, res) => {
 };
 exports.getViewRequests = async (req, res) => {
   try {
-    const response = await axios.get(`${arm_api_url}/view_requests`);
-    return res.status(200).json(response.data);
+    const response = await axios.get(`${FLASK_ENDPOINT_URL}/view_requests`);
+    const sortedData = response.data.sort((a, b) => {
+      const dateA = new Date(a.timestamp);
+      const dateB = new Date(b.timestamp);
+      return dateB - dateA;
+    });
+
+    return res.status(200).json(sortedData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -59,10 +69,12 @@ exports.getViewRequestsLazyLoading = async (req, res) => {
   const { page, limit } = req.params;
   const { startNumber, endNumber } = pageLimitData(page, limit);
   try {
-    const response = await axios.get(`${arm_api_url}/view_requests`);
-    const sortedData = response.data.sort(
-      (a, b) => b?.request_id - a?.request_id
-    );
+    const response = await axios.get(`${FLASK_ENDPOINT_URL}/view_requests`);
+    const sortedData = response.data.sort((a, b) => {
+      const dateA = new Date(a.timestamp);
+      const dateB = new Date(b.timestamp);
+      return dateB - dateA;
+    });
     const results = sortedData.slice(startNumber, endNumber);
     return res.status(200).json(results);
   } catch (error) {
@@ -73,7 +85,7 @@ exports.createTaskSchedule = async (req, res) => {
   const data = req.body;
   try {
     const response = await axios.post(
-      `${arm_api_url}/Create_TaskSchedule`,
+      `${FLASK_ENDPOINT_URL}/Create_TaskSchedule`,
       data
     );
     // console.log(response.data.error, "res");
@@ -89,7 +101,7 @@ exports.updateTaskSchedule = async (req, res) => {
   const data = req.body;
   try {
     const response = await axios.put(
-      `${arm_api_url}/Update_TaskSchedule/${task_name}/${redbeat_schedule_name}`,
+      `${FLASK_ENDPOINT_URL}/Update_TaskSchedule/${task_name}/${redbeat_schedule_name}`,
       data
     );
     return res.status(200).json(response.data);
@@ -102,7 +114,7 @@ exports.cancelTaskSchedule = async (req, res) => {
   console.log(task_name, redbeat_schedule_name, "params");
   try {
     const response = await axios.put(
-      `${arm_api_url}/Cancel_TaskSchedule/${task_name}/${redbeat_schedule_name}`
+      `${FLASK_ENDPOINT_URL}/Cancel_TaskSchedule/${task_name}/${redbeat_schedule_name}`
     );
 
     return res.status(200).json(response.data);
@@ -115,7 +127,7 @@ exports.cancelTaskSchedule = async (req, res) => {
 exports.getTaskSchedulesV1 = async (req, res) => {
   try {
     const response = await axios.get(
-      `${arm_api_url}/api/v1/Show_TaskSchedules`
+      `${FLASK_ENDPOINT_URL}/api/v1/Show_TaskSchedules`
     );
 
     const sortedData = response.data.sort(
@@ -131,11 +143,14 @@ exports.getTaskSchedulesLazyLoadingV1 = async (req, res) => {
   const { startNumber, endNumber } = pageLimitData(page, limit);
   try {
     const response = await axios.get(
-      `${arm_api_url}/api/v1/Show_TaskSchedules`
+      `${FLASK_ENDPOINT_URL}/api/v1/Show_TaskSchedules`
     );
-    const sortedData = response.data.sort(
-      (a, b) => b?.arm_task_sche_id - a?.arm_task_sche_id
-    );
+    // sort by time
+    const sortedData = response.data.sort((a, b) => {
+      const dateA = new Date(a.creation_date);
+      const dateB = new Date(b.creation_date);
+      return dateB - dateA;
+    });
 
     const results = sortedData.slice(startNumber, endNumber);
     return res.status(200).json(results);
@@ -148,7 +163,7 @@ exports.createTaskScheduleV1 = async (req, res) => {
   const data = req.body;
   try {
     const response = await axios.post(
-      `${arm_api_url}/api/v1/Create_TaskSchedule`,
+      `${FLASK_ENDPOINT_URL}/api/v1/Create_TaskSchedule`,
       data
     );
     console.log(response.data, "res");
@@ -162,7 +177,7 @@ exports.updateTaskScheduleV1 = async (req, res) => {
   const data = req.body;
   try {
     const response = await axios.put(
-      `${arm_api_url}/api/v1/Update_TaskSchedule/${task_name}`,
+      `${FLASK_ENDPOINT_URL}/api/v1/Update_TaskSchedule/${task_name}`,
       data
     );
     return res.status(200).json(response.data);
@@ -175,7 +190,7 @@ exports.cancelTaskScheduleV1 = async (req, res) => {
   const data = req.body;
   try {
     const response = await axios.put(
-      `${arm_api_url}/api/v1/Cancel_TaskSchedule/${task_name}`,
+      `${FLASK_ENDPOINT_URL}/api/v1/Cancel_TaskSchedule/${task_name}`,
       data
     );
     return res.status(200).json(response.data);
